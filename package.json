@@ -11,14 +11,23 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onCommand:pomotimer.displayTimer"
     ],
     "main": "./out/src/extension",
     "contributes": {
-        "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }]
+        "commands": [
+            {
+                "title": "Start Pomodoro Timer",
+                "command": "pomotimer.displayTimer"
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "pomotimer.displayTimer",
+                "key": "shift+p",
+                "win": "shift+p"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",

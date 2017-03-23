@@ -1,0 +1,1 @@
+export type TimerState = 'idle' | 'ongoing' | 'finished' | 'interrupted' 

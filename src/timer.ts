@@ -2,13 +2,17 @@ import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { TimerState } from './timer-state';
 
 export class Timer {
-    constructor(state: TimerState, remainingMinutes: number = 0, remainingSeconds: number = 0) {
-        const mins = getDoubleDigitRepresentation(remainingMinutes);
-        const seconds = getDoubleDigitRepresentation(remainingSeconds);
-        this.time = `${mins}:${seconds}`;
+    constructor(state: TimerState,
+        private _remainingMinutes: number = 0,
+        private _remainingSeconds: number = 0) {
+        this.setInitalTimer();
         this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 1);
         this.statusBarItem.color = 'white';
     }
+
+    private _intervalId: NodeJS.Timer;
+    public get intervalId(): NodeJS.Timer { return this._intervalId; }
+    public set intervalId(value: NodeJS.Timer) { this._intervalId = value; }
 
     private _time: string;
     get time(): string { return this._time; }
@@ -18,46 +22,52 @@ export class Timer {
     get statusBarItem() { return this._statusBarItem; }
     set statusBarItem(value: StatusBarItem) { this._statusBarItem = value; }
 
-    displayTimer(afterCommand: string) {
+    displayTimer(startCommand: string) {
+        this.setInitalTimer();
         this.statusBarItem.text = `$(triangle-right)  ${this.time}`;
-        this.statusBarItem.command = afterCommand;
+        this.statusBarItem.command = startCommand;
         this.statusBarItem.tooltip = 'Start timer';
         this.statusBarItem.show();
     }
 
-    startTimer() {
-        const startTime = new Date();
-        const endTime = new Date(startTime);
-        endTime.setMinutes(endTime.getMinutes() + 20);
+    startTimer(finishCommand: string, durationInMinutes: number) {
+        this.setInitalTimer();
+        const endTime = new Date();
+        endTime.setMinutes(endTime.getUTCMinutes() + durationInMinutes);
 
-        while (new Date() <= endTime) {
-            const diffMinutes = Math.abs(endTime.getMinutes() - new Date().getMinutes());
-            const diffSeconds = Math.abs(endTime.getSeconds() - new Date().getSeconds());
+        clearInterval(this.intervalId);
+        this.intervalId = setInterval(() => {
+            const now = Date.now();
 
-            console.log(diffMinutes, 'diffMinutes')
-            console.log(diffSeconds, 'diffSeconds')
-            //     this.time = `${diffMinutes}:${diffSeconds}`;
-            //     this.statusBarItem.text = `$(primitive-square)  ${this.time}`;
-            //     this.statusBarItem.tooltip = 'Stop timer';
-        }
+            const diffMinutes = new Date((+endTime) - now).getMinutes();
+            const diffSeconds = new Date((+endTime) - now).getSeconds();
+            this.time = `${this.getDoubleDigit(diffMinutes)}:${this.getDoubleDigit(diffSeconds)}`;
+
+            this.statusBarItem.command = finishCommand;
+            this.statusBarItem.text = `$(primitive-square)  ${this.time}`;
+            this.statusBarItem.tooltip = 'Stop timer';
+        }, 1000);
     }
 
-    finishTimer() {
-        throw "Not Implemented";
+    finishTimer(startCommand: string) {
+        this.statusBarItem.command = startCommand;
+        this.statusBarItem.text = `$(sync)  ${this.time}`;
+        this.statusBarItem.tooltip = 'Restart timer';
+        clearInterval(this.intervalId);
     }
 
     interruptTimer() {
         throw "Not Implemented";
     }
-}
 
-
-function getDoubleDigitRepresentation(num: number) {
-    const added = '0' + num.toString();
-    if (added.length >= 3) {
-        return added.slice(1, added.length - 1);
+    setInitalTimer() {
+        const mins = this.getDoubleDigit(this._remainingMinutes);
+        const seconds = this.getDoubleDigit(this._remainingSeconds);
+        this.time = `${mins}:${seconds}`;
     }
-    else {
-        return added;
+
+    getDoubleDigit(number: number) {
+        const filledNumber = '0' + number.toString();
+        return filledNumber.length >= 3 ? filledNumber.slice(1, filledNumber.length) : filledNumber;
     }
 }

@@ -1,10 +1,8 @@
 import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
-import { TimerState } from './timer-state';
+import { ITimer } from '../src/interfaces/timer.interface';
 
-export class Timer {
-    constructor(state: TimerState,
-        private _remainingMinutes: number = 0,
-        private _remainingSeconds: number = 0) {
+export class Timer implements ITimer {
+    constructor(readonly remainingMinutes = 0, readonly remainingSeconds: number = 0) {
         this.setInitalTimer();
         this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 1);
         this.statusBarItem.color = 'white';
@@ -32,20 +30,20 @@ export class Timer {
 
     startTimer(finishCommand: string, durationInMinutes: number) {
         this.setInitalTimer();
+        this.statusBarItem.command = finishCommand;
+        this.statusBarItem.tooltip = 'Stop timer';
+
         const endTime = new Date();
         endTime.setMinutes(endTime.getUTCMinutes() + durationInMinutes);
 
         clearInterval(this.intervalId);
         this.intervalId = setInterval(() => {
             const now = Date.now();
-
             const diffMinutes = new Date((+endTime) - now).getMinutes();
             const diffSeconds = new Date((+endTime) - now).getSeconds();
             this.time = `${this.getDoubleDigit(diffMinutes)}:${this.getDoubleDigit(diffSeconds)}`;
 
-            this.statusBarItem.command = finishCommand;
             this.statusBarItem.text = `$(primitive-square)  ${this.time}`;
-            this.statusBarItem.tooltip = 'Stop timer';
         }, 1000);
     }
 
@@ -61,8 +59,8 @@ export class Timer {
     }
 
     setInitalTimer() {
-        const mins = this.getDoubleDigit(this._remainingMinutes);
-        const seconds = this.getDoubleDigit(this._remainingSeconds);
+        const mins = this.getDoubleDigit(this.remainingMinutes);
+        const seconds = this.getDoubleDigit(this.remainingSeconds);
         this.time = `${mins}:${seconds}`;
     }
 

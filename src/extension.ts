@@ -2,7 +2,7 @@ import { commands, ExtensionContext } from 'vscode';
 import { Timer } from './timer';
 
 export function activate(context: ExtensionContext) {
-    let statusBarTimer = new Timer('idle', 25);
+    let statusBarTimer = new Timer(25);
 
     let displayTimerDisposable = commands.registerCommand('pomotimer.displayTimer', () => {
         statusBarTimer.displayTimer('pomotimer.startTimer');

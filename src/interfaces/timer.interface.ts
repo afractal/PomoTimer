@@ -5,6 +5,7 @@ export interface ITimer {
     remainingSeconds: number;
     statusBarItem: StatusBarItem;
     intervalId: NodeJS.Timer;
+
     displayTimer(startCommand: string): void;
     startTimer(finishCommand: string, durationInMinutes: number): void;
     finishTimer(startCommand: string): void;

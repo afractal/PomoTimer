@@ -28,13 +28,13 @@ export class Timer implements ITimer {
         this.statusBarItem.show();
     }
 
-    startTimer(finishCommand: string, durationInMinutes: number) {
+    startTimer(finishCommand: string, durationInMinutes?: number) {
         this.setInitalTimer();
         this.statusBarItem.command = finishCommand;
         this.statusBarItem.tooltip = 'Stop timer';
 
-        const endTime = new Date();
-        endTime.setMinutes(endTime.getUTCMinutes() + durationInMinutes);
+        let endTime = new Date();
+        endTime.setMinutes(endTime.getUTCMinutes() + (durationInMinutes || this.remainingMinutes));
 
         clearInterval(this.intervalId);
         this.intervalId = setInterval(() => {

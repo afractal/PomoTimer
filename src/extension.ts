@@ -9,6 +9,10 @@ export function activate(context: ExtensionContext) {
         statusBarTimer.displayTimer('pomotimer.startTimer');
     });
 
+    let hideTimerDisposable = commands.registerCommand('pomotimer.hideTimer', () => {
+        statusBarTimer.hideTimer();
+    });
+
     let startTimerDisposable = commands.registerCommand('pomotimer.startTimer', () => {
         statusBarTimer.startTimer('pomotimer.finishTimer');
     });
@@ -17,7 +21,8 @@ export function activate(context: ExtensionContext) {
         statusBarTimer.finishTimer('pomotimer.displayTimer');
     });
 
-    context.subscriptions.push(displayTimerDisposable, startTimerDisposable, finishTimerDisposable);
+    context.subscriptions.push(displayTimerDisposable, hideTimerDisposable,
+        startTimerDisposable, finishTimerDisposable);
 }
 
 export function deactivate() { }

@@ -28,6 +28,11 @@ export class Timer implements ITimer {
         this.statusBarItem.show();
     }
 
+    hideTimer() {
+        this.statusBarItem.hide();
+        clearInterval(this.intervalId);
+    }
+
     startTimer(finishCommand: string, durationInMinutes?: number) {
         this.setInitalTimer();
         this.statusBarItem.command = finishCommand;
@@ -55,7 +60,7 @@ export class Timer implements ITimer {
     }
 
     interruptTimer() {
-        throw "Not Implemented";
+        throw new Error("Not Implemented");
     }
 
     setInitalTimer() {

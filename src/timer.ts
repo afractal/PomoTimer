@@ -2,6 +2,7 @@ import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { ITimer } from '../src/interfaces/timer.interface';
 
 export class Timer implements ITimer {
+    private _intervalElapsedEvents = [];
     constructor(readonly remainingMinutes = 0, readonly remainingSeconds: number = 0) {
         this.setInitalTimer();
         this.statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 1);
@@ -14,7 +15,14 @@ export class Timer implements ITimer {
 
     private _time: string;
     get time(): string { return this._time; }
-    set time(value: string) { this._time = value; }
+    set time(value: string) {
+        if (value && value !== this._time) {
+            this._time = value;
+            for (const intervalElapsedEvent of this._intervalElapsedEvents) {
+                intervalElapsedEvent(this._time);
+            }
+        }
+    }
 
     private _statusBarItem: StatusBarItem;
     get statusBarItem() { return this._statusBarItem; }
@@ -22,9 +30,9 @@ export class Timer implements ITimer {
 
     displayTimer(startCommand: string) {
         this.setInitalTimer();
-        this.statusBarItem.text = `$(triangle-right)  ${this.time}`;
         this.statusBarItem.command = startCommand;
         this.statusBarItem.tooltip = 'Start timer';
+        this.statusBarItem.text = `$(triangle-right)  ${this.time}`;
         this.statusBarItem.show();
     }
 
@@ -47,7 +55,6 @@ export class Timer implements ITimer {
             const diffMinutes = new Date((+endTime) - now).getMinutes();
             const diffSeconds = new Date((+endTime) - now).getSeconds();
             this.time = `${this.getDoubleDigit(diffMinutes)}:${this.getDoubleDigit(diffSeconds)}`;
-
             this.statusBarItem.text = `$(primitive-square)  ${this.time}`;
         }, 1000);
     }
@@ -63,6 +70,25 @@ export class Timer implements ITimer {
         throw new Error("Not Implemented");
     }
 
+    timerStoppedHandler(startCommand: string, str: string) {
+        if (str === '00:00') {
+            this.setInitalTimer();
+            this.statusBarItem.tooltip = 'Start timer';
+            this.statusBarItem.command = startCommand;
+            clearInterval(this.intervalId);
+            setTimeout(() => {
+                this.statusBarItem.text = `$(triangle-right)  ${this.time}`;
+            }, 4);
+            window.showInformationMessage('Time for a break');
+        }
+    }
+
+    // events
+    onIntervalElapsed(handler) {
+        this._intervalElapsedEvents.push(handler);
+    }
+
+    // privates
     setInitalTimer() {
         const mins = this.getDoubleDigit(this.remainingMinutes);
         const seconds = this.getDoubleDigit(this.remainingSeconds);

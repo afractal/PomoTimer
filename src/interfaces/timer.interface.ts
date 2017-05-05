@@ -11,6 +11,10 @@ export interface ITimer {
     finishTimer(startCommand: string): void;
     interruptTimer(): void;
     setInitalTimer(): void;
+    timerStoppedHandler(startCommand: string, str: string): void;
+
+    onIntervalElapsed(handler): void;
+
 }
 
 export interface ITimerConstructor<T> {

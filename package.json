@@ -1,7 +1,7 @@
 {
     "name": "pomotimer",
     "displayName": "PomoTimer",
-    "description": "A fancy pomodoro timer in your status bar",
+    "description": "A fancy pomodoro timer in your status bar.",
     "version": "0.1.0",
     "publisher": "afractal",
     "repository": {

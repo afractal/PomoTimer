@@ -5,6 +5,11 @@ export function activate(context: ExtensionContext) {
     const config = workspace.getConfiguration('pomotimer')
     let statusBarTimer = new Timer(config.get<number>('workTime'));
 
+    statusBarTimer.onIntervalElapsed(function (t) {
+        // console.log('the time is: ', t);
+        statusBarTimer.timerStoppedHandler('pomotimer.startTimer', t);
+    });
+
     let displayTimerDisposable = commands.registerCommand('pomotimer.displayTimer', () => {
         statusBarTimer.displayTimer('pomotimer.startTimer');
     });

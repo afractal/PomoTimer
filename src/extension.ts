@@ -1,33 +1,92 @@
-import { commands, ExtensionContext, workspace } from 'vscode';
-import { Timer } from './timer';
-
+import { window, StatusBarAlignment, StatusBarItem, commands, ExtensionContext, workspace } from 'vscode';
+import { Timer } from 'sharp-timer';
+import { TimerComponent } from './timer-component';
+// import { TimerManager } from './timer-manager';
+/*
+register commands
+- displayTimer
+- hideTimer
+*/
 export function activate(context: ExtensionContext) {
     const config = workspace.getConfiguration('pomotimer')
-    let statusBarTimer = new Timer(config.get<number>('workTime'));
+    let configMinutes = config.get<number>('workTime');
 
-    statusBarTimer.onIntervalElapsed(function (t) {
-        // console.log('the time is: ', t);
-        statusBarTimer.timerStoppedHandler('pomotimer.startTimer', t);
+    let timerComponent = new TimerComponent(configMinutes);
+
+
+    let statusBarItem = window.createStatusBarItem(StatusBarAlignment.Right, 1);
+    statusBarItem.command = 'pomotimer.startTimer';
+    statusBarItem.tooltip = 'Start timer';
+
+    let timer = new Timer(configMinutes * 60);
+    statusBarItem.text = `$(triangle-right)  ${timer.toString()}`;
+
+    timer.onIntervalElapsing(r => {
+        statusBarItem.text = `$(primitive-square)  ${timer.toString()}`;
     });
+    timer.onIntervalElapsed(() => {
+        statusBarItem.command = "pomotimer.restartTimer";
+        statusBarItem.text = `$(sync)  ${timer.toString()}`;
+        statusBarItem.tooltip = 'Restart timer';
+        timer.stop();
+        timer = null;
+        window.showInformationMessage('Time for a break');
+    });
+
 
     let displayTimerDisposable = commands.registerCommand('pomotimer.displayTimer', () => {
-        statusBarTimer.displayTimer('pomotimer.startTimer');
-    });
-
-    let hideTimerDisposable = commands.registerCommand('pomotimer.hideTimer', () => {
-        statusBarTimer.hideTimer();
+        statusBarItem.show();
     });
 
     let startTimerDisposable = commands.registerCommand('pomotimer.startTimer', () => {
-        statusBarTimer.startTimer('pomotimer.finishTimer');
+        timer.start();
+        statusBarItem.command = 'pomotimer.pauseTimer';
+        statusBarItem.tooltip = 'Pause timer';
     });
 
-    let finishTimerDisposable = commands.registerCommand('pomotimer.finishTimer', () => {
-        statusBarTimer.finishTimer('pomotimer.displayTimer');
+    let pauseTimerDisposable = commands.registerCommand('pomotimer.pauseTimer', () => {
+        timer.pause();
+        statusBarItem.command = 'pomotimer.resumeTimer';
+        statusBarItem.tooltip = 'Start timer';
+        statusBarItem.text = `$(triangle-right)  ${timer.toString()}`;
     });
 
-    context.subscriptions.push(displayTimerDisposable, hideTimerDisposable,
-        startTimerDisposable, finishTimerDisposable);
+    let resumeTimerDisposable = commands.registerCommand('pomotimer.resumeTimer', () => {
+        timer.resume();
+        statusBarItem.command = 'pomotimer.pauseTimer';
+        statusBarItem.tooltip = 'Pause timer';
+    });
+
+    let restartTimerDisposable = commands.registerCommand('pomotimer.restartTimer', () => {
+        timer = null;
+        timer = new Timer(configMinutes * 60);
+        timer.start();
+        statusBarItem.command = 'pomotimer.pauseTimer';
+        statusBarItem.tooltip = 'Pause timer';
+        timer.onIntervalElapsing(r => {
+            statusBarItem.text = `$(primitive-square)  ${timer.toString()}`;
+        });
+        timer.onIntervalElapsed(() => {
+            statusBarItem.command = "pomotimer.restartTimer";
+            statusBarItem.text = `$(sync)  ${timer.toString()}`;
+            statusBarItem.tooltip = 'Restart timer';
+            timer.stop();
+            timer = null;
+            window.showInformationMessage('Time for a break');
+        });
+    });
+
+    let hideTimerDisposable = commands.registerCommand('pomotimer.hideTimer', () => {
+        statusBarItem.hide();
+    });
+
+    context.subscriptions.push(
+        displayTimerDisposable,
+        pauseTimerDisposable,
+        hideTimerDisposable,
+        startTimerDisposable,
+        restartTimerDisposable
+    );
 }
 
 export function deactivate() { }

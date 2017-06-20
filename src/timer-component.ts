@@ -61,7 +61,7 @@ export class TimerComponent {
         this.statusBarAction.tooltip = 'Start timer';
         this.statusBarClock.text = `${this.timer.toString()}`;
 
-        this.timer.onIntervalElapsing(r => {
+        this.timer.onIntervalElapsing((r: number) => {
             this.statusBarAction.text = '$(primitive-square)';
             this.statusBarClock.text = `${this.timer.toString()}`;
         });
@@ -71,7 +71,6 @@ export class TimerComponent {
             this.statusBarAction.tooltip = 'Restart timer';
             this.statusBarClock.text = `${this.timer.toString()}`;
             this.timer.stop();
-            this.timer = null;
             window.showInformationMessage('Time for a break');
         });
     }

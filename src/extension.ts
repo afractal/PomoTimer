@@ -1,7 +1,6 @@
 import { window, commands, ExtensionContext, workspace, QuickPickItem } from 'vscode';
 import { TimerComponent } from './timer-component';
 
-
 type PickTypes = 'add' | 'mark' | 'remove';
 
 interface Pick extends QuickPickItem {

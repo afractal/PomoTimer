@@ -1,6 +1,8 @@
 ![alt](./assets/init.gif)
 
 
+[![Build Status](https://travis-ci.com/afractal/PomoTimer.svg?token=sN9qiKvy34fJyhwzHohM&branch=master)](https://travis-ci.com/afractal/PomoTimer)
+
 ## Changes
 
 *v0.1.0*

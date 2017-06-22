@@ -20,11 +20,17 @@
     "engines": {
         "vscode": "^1.13.0"
     },
+    "keywords": [
+        "pomotimer",
+        "time tracker",
+        "pomodoro timer"
+    ],
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "onCommand:pomotimer.displayTimer"
+        "onCommand:pomotimer.displayTimer",
+        "onCommand:pomotimer.displayTaskboard"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -50,9 +56,18 @@
             {
                 "title": "Hide Pomodoro Timer",
                 "command": "pomotimer.hideTimer"
+            },
+            {
+                "title": "Display Taskboard",
+                "command": "pomotimer.displayTaskboard"
             }
         ],
         "keybindings": [
+            {
+                "command": "pomotimer.displayTaskboard",
+                "key": "ctrl+alt+t",
+                "win": "ctrl+alt+t"
+            },
             {
                 "command": "pomotimer.displayTimer",
                 "key": "ctrl+alt+d",

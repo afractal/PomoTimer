@@ -31,12 +31,11 @@ const hideTimerCommand = commands.registerCommand('pomotimer.hideTimer', () => {
 });
 
 
-export const getTimerCommands = (): (Disposable[]) =>
-    [
-        displayTimerCommand,
-        startTimerCommand,
-        pauseTimerCommand,
-        resumeTimerCommand,
-        restartTimerCommand,
-        hideTimerCommand
-    ];
+export const getTimerCommands = (): (Disposable[]) => [
+    displayTimerCommand,
+    startTimerCommand,
+    pauseTimerCommand,
+    resumeTimerCommand,
+    restartTimerCommand,
+    hideTimerCommand
+];

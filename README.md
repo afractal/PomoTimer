@@ -1,6 +1,7 @@
 <!--![alt](./assets/init.gif)-->
 
 [![Build Status](https://travis-ci.com/afractal/PomoTimer.svg?token=sN9qiKvy34fJyhwzHohM&branch=master)](https://travis-ci.com/afractal/PomoTimer)
+[![Build status](https://ci.appveyor.com/api/projects/status/fqnva71t73fotv23/branch/master?svg=true)](https://ci.appveyor.com/project/hermesxgjini/pomotimer/branch/master)
 
 ## Changes
 

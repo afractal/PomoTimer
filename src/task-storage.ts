@@ -10,7 +10,6 @@ export class TaskStorage {
     }
 
     async insertAsync(taskName: string) {
-        console.log(this.getTaskNames())
         const taskNames = this.getTaskNames().concat(taskName);
         const values = new Set<string>(taskNames).values();
         await this.memento.update(this.mementoKey, [...values]);

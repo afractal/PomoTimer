@@ -11,17 +11,17 @@ export class TaskManager {
     }
     taskStorage: TaskStorage;
 
-    testPickerAsync = async () => {
-        let addPick: Pick = { kind: 'add', label: 'Add new task to board', description: '' };
-        let markPick: Pick = { kind: 'mark', label: 'Mark task as done', description: '' };
-        let removePick: Pick = { kind: 'remove', label: 'Remove task from board', description: '' };
+    async testPickerAsync() {
+        const addPick: Pick = { kind: 'add', label: 'Add new task to board', description: '' };
+        const markPick: Pick = { kind: 'mark', label: 'Mark task as done', description: '' };
+        const removePick: Pick = { kind: 'remove', label: 'Remove task from board', description: '' };
 
-        let selectedPick = await window.showQuickPick([addPick, markPick, removePick], {
+        const selectedPick = await window.showQuickPick([addPick, markPick, removePick], {
             placeHolder: 'Choose the action you want to perform'
         });
 
         await this.performActionAsync(selectedPick);
-    };
+    }
 
     private async showAddTaskPickerAsync() {
         const taskName = await window.showInputBox({
@@ -51,7 +51,7 @@ export class TaskManager {
         window.showInformationMessage(`${taskPick.label} removed`);
     };
 
-    private performActionAsync = async (picker: Pick | undefined) => {
+    private async performActionAsync(picker: Pick | undefined) {
         if (!picker) return;
 
         switch (picker.kind) {

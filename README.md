@@ -7,13 +7,12 @@
 
 *v.0.2.0*
 
-- add taskboard
-- integrate taskboard with the timer
-- add CI with travis
+- add and integrate taskboard with timer
+- add CI with travis and appveyor
 
 *v0.1.0*
 
-- basic pomodoro timer functionality
+- add basic pomodoro timer functionality
 
 
 ## Credits

@@ -1,16 +1,16 @@
-type MessageDelegate = () => void;
+type MessageDelegate = (data: any) => void;
 
 export class MessagingCenter {
     private static _cache = new Map<string, Array<MessageDelegate>>();
 
-    static publish(id: string) {
+    static publish(id: string, data: any) {
         this.throwIfEmpty(id);
 
         if (!this._cache.has(id)) return;
 
         const delegates = this.getDelegates(id);
         for (const delegate of delegates) {
-            delegate();
+            delegate(data);
         }
     }
 

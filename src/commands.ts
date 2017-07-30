@@ -5,3 +5,4 @@ type Commands =
     | 'pomotimer.resumeTimer'
     | 'pomotimer.restartTimer'
     | 'pomotimer.hideTimer'
+    | 'pomotimer.displayTaskboard'

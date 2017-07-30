@@ -11,14 +11,14 @@ suite('messaging center tests', () => {
 
     suite('publish tests', () => {
         test('should throw if passed in an empty id into publish', () => {
-            assert.throws(() => MessagingCenter.publish(''));
+            assert.throws(() => MessagingCenter.publish('', null));
         });
 
         test('should call the function passed in from subscribe', () => {
             let called = false;
 
             MessagingCenter.subscribe('call_test', () => called = true);
-            MessagingCenter.publish('call_test');
+            MessagingCenter.publish('call_test', null);
 
             assert.isTrue(called);
         });
@@ -31,7 +31,7 @@ suite('messaging center tests', () => {
             MessagingCenter.subscribe('call_test', () => called1 = true);
             MessagingCenter.subscribe('call_test', () => called2 = true);
             MessagingCenter.subscribe('call_test', () => called3 = true);
-            MessagingCenter.publish('call_test');
+            MessagingCenter.publish('call_test', null);
 
             assert.isTrue(called1);
             assert.isTrue(called2);
@@ -49,7 +49,7 @@ suite('messaging center tests', () => {
 
             MessagingCenter.subscribe('call_test', () => called = true);
             MessagingCenter.unsubscribe('call_test');
-            MessagingCenter.publish('call_test');
+            MessagingCenter.publish('call_test', null);
 
             assert.isFalse(called);
         });
@@ -63,7 +63,7 @@ suite('messaging center tests', () => {
             MessagingCenter.subscribe('call_test', () => called2 = true);
             MessagingCenter.subscribe('call_test', () => called3 = true);
             MessagingCenter.unsubscribe('call_test');
-            MessagingCenter.publish('call_test');
+            MessagingCenter.publish('call_test', null);
 
             assert.isFalse(called1);
             assert.isFalse(called2);

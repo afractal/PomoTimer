@@ -1,22 +1,11 @@
 import { window, QuickPickItem, Memento } from 'vscode';
 import { TaskStorage } from './task-storage';
 import { MessagingCenter } from './messaging-center';
+import { Pick } from './types/pick';
+import { Messages } from './types/messages';
+import { Task } from "./types/task";
 
-interface Pick extends QuickPickItem {
-    kind: 'add' | 'mark' | 'remove' | 'choose';
-}
-
-type lol = {
-    name: string,
-    lol: number
-};
-
-var baby: lol = {
-    lol: 1,
-    name: ''
-};
-
-export class TaskManager {
+export class TaskComponent {
     constructor(memento: Memento) {
         this.taskStorage = new TaskStorage(memento);
     }
@@ -44,17 +33,18 @@ export class TaskManager {
 
         if (!taskPick) return;
 
-        MessagingCenter.publish('attach-task', taskPick.label);
+        MessagingCenter.publish(Messages.AttachTask, taskPick.label);
     }
 
     private async showAddPickerAsync() {
         const taskName = await window.showInputBox({
-            placeHolder: 'Enter the name of the task'
+            placeHolder: 'Enter the name of the task you want to add'
         });
 
         if (!taskName) return;
 
-        await this.taskStorage.insertAsync(taskName);
+        const task: Task = { name: taskName };
+        await this.taskStorage.insertAsync(task);
         await this.showTaskboard();
     }
 
@@ -62,12 +52,13 @@ export class TaskManager {
         const taskPicks = this.getTaskPicks();
 
         const taskPick = await window.showQuickPick(taskPicks, {
-            placeHolder: ''
+            placeHolder: 'Enter the name of the task you want to remove'
         });
 
         if (!taskPick) return;
 
-        await this.taskStorage.removeAsync(taskPick.label);
+        const task: Task = { name: taskPick.label };
+        await this.taskStorage.removeAsync(task);
         await this.showTaskboard();
     };
 
@@ -93,9 +84,9 @@ export class TaskManager {
     };
 
     private async getTaskPicks() {
-        return this.taskStorage.getTaskNames()
+        return this.taskStorage.getTasks()
             .map(t => ({
-                label: t,
+                label: t.name,
                 description: ''
             } as QuickPickItem));
     }

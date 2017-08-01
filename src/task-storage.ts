@@ -1,23 +1,26 @@
 import { Memento } from 'vscode';
+import { Task } from './types/task';
 
 export class TaskStorage {
     private readonly mementoKey = 'tasks';
 
     constructor(private readonly memento: Memento) { }
 
-    getTaskNames() {
-        return this.memento.get<Array<string>>(this.mementoKey, []);
+    getTasks() {
+        return this.memento.get<Array<Task>>(this.mementoKey, []);
     }
 
-    async insertAsync(taskName: string) {
-        const taskNames = this.getTaskNames().concat(taskName);
-        const values = new Set<string>(taskNames).values();
+    async insertAsync(task: Task) {
+        const tasks = this.getTasks().concat(task);
+        const values = new Set<Task>(tasks).values();
+
         await this.memento.update(this.mementoKey, [...values]);
     }
 
-    async removeAsync(taskName: string) {
-        const taskNames = this.getTaskNames().filter(t => t !== taskName);
-        const values = new Set<string>(taskNames).values();
+    async removeAsync(task: Task) {
+        const tasks = this.getTasks().filter(t => t.name !== task.name);
+        const values = new Set<Task>(tasks).values();
+
         await this.memento.update(this.mementoKey, [...values]);
     }
 

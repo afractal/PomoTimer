@@ -1,4 +1,5 @@
-type MessageDelegate = (data: any) => void;
+
+export type MessageDelegate = (data: any) => void;
 
 export class MessagingCenter {
     private static _cache = new Map<string, Array<MessageDelegate>>();
@@ -28,13 +29,13 @@ export class MessagingCenter {
 
     static unsubscribe(id: string) {
         this.throwIfEmpty(id);
-
         this._cache.delete(id);
     }
 
     private static throwIfEmpty(id: string) {
-        if (id.trim() === '')
+        if (id.trim() === '') {
             throw Error(`id cannot be empty`);
+        }
     }
 
     private static getDelegates(id: string) {

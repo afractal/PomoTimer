@@ -1,5 +1,6 @@
 import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { Timer } from 'sharp-timer';
+import { Commands } from './types/commands';
 
 export class TimerComponent {
     constructor(readonly startTimeInMinutes: number, startCommand: Commands, restartCommand: Commands) {

@@ -1,3 +1,4 @@
 export enum Messages {
-    AttachTask = 'attach-task'
+    AttachTask = 'attach-task',
+    Lol = 'lol'
 }

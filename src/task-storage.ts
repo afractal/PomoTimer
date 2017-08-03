@@ -17,8 +17,8 @@ export class TaskStorage {
         await this.memento.update(this.mementoKey, [...values]);
     }
 
-    async removeAsync(task: Task) {
-        const tasks = this.getTasks().filter(t => t.name !== task.name);
+    async removeAsync(taskName: string) {
+        const tasks = this.getTasks().filter(t => t.name !== taskName);
         const values = new Set<Task>(tasks).values();
 
         await this.memento.update(this.mementoKey, [...values]);

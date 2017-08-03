@@ -1,6 +1,9 @@
 import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { Timer } from 'sharp-timer';
 import { Commands } from './types/commands';
+import { Task } from './types/task';
+import { Messages } from './types/messages';
+import { MessagingCenter } from './messaging-center';
 
 export class TimerComponent {
     constructor(readonly startTimeInMinutes: number, startCommand: Commands, restartCommand: Commands) {
@@ -27,7 +30,7 @@ export class TimerComponent {
     get timer() { return this._timer; }
     set timer(value) { this._timer = value }
 
-    private _selectedTask: string | null;
+    private _selectedTask: Task | null;
     get selectedTask() { return this._selectedTask; }
 
     displayTimer() {
@@ -67,8 +70,9 @@ export class TimerComponent {
         this.statusBarClock.hide();
     }
 
-    setWorkingTask(displayTaskboardCommand: Commands, selectedTask: string) {
-        this.statusBarSelectedTask.text = this._selectedTask = selectedTask;
+    setWorkingTask(displayTaskboardCommand: Commands, selectedTask: Task) {
+        this._selectedTask = selectedTask;
+        this.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
         this.statusBarSelectedTask.command = displayTaskboardCommand;
         this.statusBarSelectedTask.tooltip = 'Current working task';
         this.statusBarSelectedTask.color = '#bfbfbf';
@@ -94,6 +98,10 @@ export class TimerComponent {
             this.statusBarClock.text = `${this.timer.toString()}`;
             this.timer.stop();
             window.showInformationMessage('Time for a break');
+
+            if (this.selectedTask) {
+                MessagingCenter.publish(Messages.Lol, this.selectedTask.completedPomodori++);
+            }
         });
     }
 }

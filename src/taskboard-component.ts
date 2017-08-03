@@ -4,6 +4,7 @@ import { MessagingCenter } from './messaging-center';
 import { Pick } from './types/pick';
 import { Messages } from './types/messages';
 import { Task } from "./types/task";
+import { TaskPick } from "./types/task-pick";
 
 export class TaskComponent {
     constructor(memento: Memento) {
@@ -33,17 +34,27 @@ export class TaskComponent {
 
         if (!taskPick) return;
 
-        MessagingCenter.publish(Messages.AttachTask, taskPick.label);
+        MessagingCenter.publish(Messages.AttachTask, taskPick);
     }
 
     private async showAddPickerAsync() {
         const taskName = await window.showInputBox({
             placeHolder: 'Enter the name of the task you want to add'
-        });
+        })
 
         if (!taskName) return;
 
-        const task: Task = { name: taskName };
+        const taskEstimatedPomodori = await window.showInputBox({
+            placeHolder: 'Enter the number of estimated pomodori',
+        });
+
+        if (!taskEstimatedPomodori && !+taskEstimatedPomodori) return;
+
+        const task: Task = {
+            name: taskName,
+            estimatedPomodori: +taskEstimatedPomodori,
+            completedPomodori: 0
+        };
         await this.taskStorage.insertAsync(task);
         await this.showTaskboard();
     }
@@ -57,8 +68,7 @@ export class TaskComponent {
 
         if (!taskPick) return;
 
-        const task: Task = { name: taskPick.label };
-        await this.taskStorage.removeAsync(task);
+        await this.taskStorage.removeAsync(taskPick.label);
         await this.showTaskboard();
     };
 
@@ -87,7 +97,8 @@ export class TaskComponent {
         return this.taskStorage.getTasks()
             .map(t => ({
                 label: t.name,
-                description: ''
-            } as QuickPickItem));
+                description: `${t.completedPomodori}/${t.estimatedPomodori}`,
+                task: t
+            } as TaskPick));
     }
 }

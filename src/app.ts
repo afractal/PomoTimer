@@ -1,9 +1,10 @@
 import { workspace, commands, ExtensionContext } from 'vscode';
 import { TimerComponent } from "./timer-component";
-import { TaskComponent } from "./task-component";
+import { TaskComponent } from "./taskboard-component";
 import { MessagingCenter } from "./messaging-center";
 import { Commands } from './types/commands';
 import { Messages } from './types/messages';
+import { TaskPick } from "./types/task-pick";
 
 export const createApp = (context: ExtensionContext) => {
     const config = workspace.getConfiguration('pomotimer')
@@ -11,9 +12,16 @@ export const createApp = (context: ExtensionContext) => {
     let timerComponent = new TimerComponent(configMinutes, Commands.StartTimer, Commands.RestartTimer);
     let taskComponent = new TaskComponent(context.globalState);
 
-    MessagingCenter.subscribe(Messages.AttachTask, (selectedTask: string) => {
-        timerComponent.setWorkingTask(Commands.DisplayTaskboard, selectedTask);
+    MessagingCenter.subscribe(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
+        timerComponent.setWorkingTask(Commands.DisplayTaskboard, selectedTaskPick.task);
     });
+
+    MessagingCenter.subscribe(Messages.Lol, (completedPomodori: number) => {
+        if (timerComponent.selectedTask) {
+            timerComponent.selectedTask.completedPomodori = completedPomodori;
+        }
+    })
+
 
     const displayTimerCommand = commands.registerCommand(Commands.DisplayTimer, async () => {
         timerComponent.displayTimer();

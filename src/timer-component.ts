@@ -1,11 +1,16 @@
 import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { Timer } from 'sharp-timer';
-import { Commands } from "./timer-commands";
+import { Commands } from './types/commands';
+import { Task } from './types/task';
+import { Messages } from './types/messages';
+import { MessagingCenter } from './messaging-center';
 
 export class TimerComponent {
     constructor(readonly startTimeInMinutes: number, startCommand: Commands, restartCommand: Commands) {
-        this.statusBarClock = window.createStatusBarItem(StatusBarAlignment.Right, 1);
-        this.statusBarAction = window.createStatusBarItem(StatusBarAlignment.Right, 2);
+        this.selectedTask = Object.create(null);
+        this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
+        this.statusBarClock = window.createStatusBarItem(StatusBarAlignment.Right, 2);
+        this.statusBarAction = window.createStatusBarItem(StatusBarAlignment.Right, 3);
         this.initTimer(startCommand, restartCommand);
     }
 
@@ -17,13 +22,24 @@ export class TimerComponent {
     get statusBarAction() { return this._statusBarAction; }
     set statusBarAction(value) { this._statusBarAction = value; }
 
+    private _statusBarSelectedTask: StatusBarItem;
+    get statusBarSelectedTask() { return this._statusBarSelectedTask; }
+    set statusBarSelectedTask(value) { this._statusBarSelectedTask = value; }
+
     private _timer: Timer;
     get timer() { return this._timer; }
     set timer(value) { this._timer = value }
 
+    private _selectedTask: Task;
+    get selectedTask() { return this._selectedTask; }
+    set selectedTask(value) { this._selectedTask = value; }
+
     displayTimer() {
         this.statusBarClock.show();
         this.statusBarAction.show();
+        if (this._selectedTask) {
+            this.statusBarSelectedTask.show();
+        }
     }
 
     startTimer(pauseCommand: Commands) {
@@ -55,10 +71,20 @@ export class TimerComponent {
         this.statusBarClock.hide();
     }
 
+    setWorkingTask(displayTaskboardCommand: Commands, selectedTask: Task) {
+        this.selectedTask = selectedTask;
+        this.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
+        this.statusBarSelectedTask.command = displayTaskboardCommand;
+        this.statusBarSelectedTask.tooltip = 'Current working task';
+        this.statusBarSelectedTask.color = '#bfbfbf';
+
+        this.displayTimer();
+    }
+
     private initTimer(startCommand: Commands, restartCommand: Commands) {
         this.timer = new Timer(this.startTimeInMinutes * 60);
-        this.statusBarAction.text = '$(triangle-right)';
         this.statusBarAction.command = startCommand;
+        this.statusBarAction.text = '$(triangle-right)';
         this.statusBarAction.tooltip = 'Start timer';
         this.statusBarClock.text = `${this.timer.toString()}`;
 
@@ -73,6 +99,11 @@ export class TimerComponent {
             this.statusBarClock.text = `${this.timer.toString()}`;
             this.timer.stop();
             window.showInformationMessage('Time for a break');
+
+            if (this.selectedTask && this.selectedTask.completedPomodori <= this.selectedTask.estimatedPomodori) {
+                this.selectedTask.completedPomodori += 1;
+                MessagingCenter.publish(Messages.UpdatePomodoriCounter, this.selectedTask.completedPomodori);
+            }
         });
     }
 }

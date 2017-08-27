@@ -1,0 +1,19 @@
+environment:
+    ELECTRON_NO_ATTACH_CONSOLE: 1
+
+install:
+    - ps: Install-Product node 7 x64
+    - npm install -g npm
+    - npm install
+
+platform:
+    - x86
+    - x64
+
+build: off
+
+before_test:
+    - npm run vscode:prepublish
+
+test_script:
+    - npm test --silent

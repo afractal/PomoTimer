@@ -1,14 +1,14 @@
 import { assert } from 'chai';
 import { workspace, commands } from 'vscode';
 import { TimerComponent } from '../src/timer-component';
-
+import { Commands } from '../src/types/commands';
 
 const config = workspace.getConfiguration('pomotimer')
 let configMinutes = config.get<number>('workTime');
 let timerComponent = new TimerComponent(
     configMinutes || 20,
-    'pomotimer.startTimer',
-    'pomotimer.restartTimer'
+    Commands.StartTimer,
+    Commands.RestartTimer
 );
 
 suite('commands tests', () => {

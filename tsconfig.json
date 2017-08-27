@@ -1,15 +1,18 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
         "target": "es2015",
         "module": "commonjs",
         "outDir": "out",
         "lib": [
-            "es2015",
-            "es2016.array.include"
+            "es2015"
         ],
         "sourceMap": true,
         "strict": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "rootDir": ".",
+        "moduleResolution": "node",
         "typeRoots": [
             "./node_modules/@types"
         ]

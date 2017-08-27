@@ -1,10 +1,8 @@
-import { window, commands, ExtensionContext, workspace } from 'vscode';
-import { getTimerCommands } from './timer-manager';
-import { initTaskBoard } from './taskboard-component';
+import { ExtensionContext } from 'vscode';
+import { createApp } from './app';
 
 export function activate(context: ExtensionContext) {
-    const timerCommands = getTimerCommands();
-    context.subscriptions.push(...timerCommands);
+    createApp(context);
 }
 
 export function deactivate() { }

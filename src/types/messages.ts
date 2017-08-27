@@ -1,4 +1,4 @@
 export enum Messages {
     AttachTask = 'attach-task',
-    Lol = 'lol'
+    UpdatePomodoriCounter = 'update-pomodori-counter'
 }

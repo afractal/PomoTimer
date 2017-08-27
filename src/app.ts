@@ -5,20 +5,23 @@ import { MessagingCenter } from "./messaging-center";
 import { Commands } from './types/commands';
 import { Messages } from './types/messages';
 import { TaskPick } from "./types/task-pick";
+import { TaskStorage } from "./task-storage";
 
 export const createApp = (context: ExtensionContext) => {
     const config = workspace.getConfiguration('pomotimer')
     let configMinutes = config.get<number>('workTime') || 20;
     let timerComponent = new TimerComponent(configMinutes, Commands.StartTimer, Commands.RestartTimer);
     let taskComponent = new TaskComponent(context.globalState);
+    let taskStorage = new TaskStorage(context.globalState);
 
     MessagingCenter.subscribe(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
         timerComponent.setWorkingTask(Commands.DisplayTaskboard, selectedTaskPick.task);
     });
 
-    MessagingCenter.subscribe(Messages.Lol, (completedPomodori: number) => {
+    MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
         if (timerComponent.selectedTask) {
             timerComponent.selectedTask.completedPomodori = completedPomodori;
+            await taskStorage.updateAsync(timerComponent.selectedTask);
         }
     })
 

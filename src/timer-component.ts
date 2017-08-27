@@ -7,7 +7,7 @@ import { MessagingCenter } from './messaging-center';
 
 export class TimerComponent {
     constructor(readonly startTimeInMinutes: number, startCommand: Commands, restartCommand: Commands) {
-        this._selectedTask = null;
+        this.selectedTask = Object.create(null);
         this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
         this.statusBarClock = window.createStatusBarItem(StatusBarAlignment.Right, 2);
         this.statusBarAction = window.createStatusBarItem(StatusBarAlignment.Right, 3);
@@ -30,8 +30,9 @@ export class TimerComponent {
     get timer() { return this._timer; }
     set timer(value) { this._timer = value }
 
-    private _selectedTask: Task | null;
+    private _selectedTask: Task;
     get selectedTask() { return this._selectedTask; }
+    set selectedTask(value) { this._selectedTask = value; }
 
     displayTimer() {
         this.statusBarClock.show();
@@ -71,7 +72,7 @@ export class TimerComponent {
     }
 
     setWorkingTask(displayTaskboardCommand: Commands, selectedTask: Task) {
-        this._selectedTask = selectedTask;
+        this.selectedTask = selectedTask;
         this.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
         this.statusBarSelectedTask.command = displayTaskboardCommand;
         this.statusBarSelectedTask.tooltip = 'Current working task';
@@ -99,8 +100,9 @@ export class TimerComponent {
             this.timer.stop();
             window.showInformationMessage('Time for a break');
 
-            if (this.selectedTask) {
-                MessagingCenter.publish(Messages.Lol, this.selectedTask.completedPomodori++);
+            if (this.selectedTask && this.selectedTask.completedPomodori <= this.selectedTask.estimatedPomodori) {
+                this.selectedTask.completedPomodori += 1;
+                MessagingCenter.publish(Messages.UpdatePomodoriCounter, this.selectedTask.completedPomodori);
             }
         });
     }

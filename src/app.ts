@@ -30,8 +30,6 @@ export const createApp = (context: ExtensionContext) => {
     });
 
     const startTimerCommand = commands.registerCommand(Commands.StartTimer, async () => {
-        console.log('timerComponent.selectedTask', timerComponent.selectedTask);
-
         if (!timerComponent.selectedTask) {
             await taskComponent.showTaskboard();
         } else {

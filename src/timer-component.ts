@@ -7,7 +7,7 @@ import { MessagingCenter } from './messaging-center';
 
 export class TimerComponent {
     constructor(readonly startTimeInMinutes: number, startCommand: Commands, restartCommand: Commands) {
-        this.selectedTask = Object.create(null);
+        this.selectedTask = null;
         this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
         this.statusBarClock = window.createStatusBarItem(StatusBarAlignment.Right, 2);
         this.statusBarAction = window.createStatusBarItem(StatusBarAlignment.Right, 3);
@@ -30,7 +30,7 @@ export class TimerComponent {
     get timer() { return this._timer; }
     set timer(value) { this._timer = value }
 
-    private _selectedTask: Task;
+    private _selectedTask: Task | null;
     get selectedTask() { return this._selectedTask; }
     set selectedTask(value) { this._selectedTask = value; }
 

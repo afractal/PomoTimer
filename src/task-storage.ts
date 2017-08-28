@@ -18,10 +18,15 @@ export class TaskStorage {
     }
 
     async updateAsync(task: Task) {
-        const tasks = this.getTasks().map(t => {
-            if (true) { }
-        });
-        await this.memento
+        const tasks = this.getTasks()
+            .map(t => {
+                if (t.name == task.name) {
+                    t.completedPomodori = task.completedPomodori;
+                }
+                return t;
+            });
+
+        await this.memento.update(this.mementoKey, tasks);
     }
 
     async removeAsync(taskName: string) {

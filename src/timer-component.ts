@@ -71,7 +71,7 @@ export class TimerComponent {
         this.statusBarClock.hide();
     }
 
-    setWorkingTask(displayTaskboardCommand: Commands, selectedTask: Task) {
+    setCurrentWorkingTask(displayTaskboardCommand: Commands, selectedTask: Task) {
         this.selectedTask = selectedTask;
         this.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
         this.statusBarSelectedTask.command = displayTaskboardCommand;
@@ -92,6 +92,7 @@ export class TimerComponent {
             this.statusBarAction.text = '$(primitive-square)';
             this.statusBarClock.text = `${this.timer.toString()}`;
         });
+
         this.timer.onIntervalElapsed(() => {
             this.statusBarAction.command = restartCommand;
             this.statusBarAction.text = '$(sync)';
@@ -100,8 +101,9 @@ export class TimerComponent {
             this.timer.stop();
             window.showInformationMessage('Time for a break');
 
-            if (this.selectedTask && this.selectedTask.completedPomodori <= this.selectedTask.estimatedPomodori) {
+            if (this.selectedTask && this.selectedTask.completedPomodori < this.selectedTask.estimatedPomodori) {
                 this.selectedTask.completedPomodori += 1;
+                this.statusBarSelectedTask.text = `${this.selectedTask.name} - ${this.selectedTask.completedPomodori}/${this.selectedTask.estimatedPomodori}`;
                 MessagingCenter.publish(Messages.UpdatePomodoriCounter, this.selectedTask.completedPomodori);
             }
         });

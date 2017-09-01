@@ -81,6 +81,16 @@ export class TimerComponent {
         this.displayTimer();
     }
 
+    removeCurrentWorkingTask(selectedTask: Task) {
+        if (this.selectedTask && this.selectedTask.name == selectedTask.name) {
+            this.selectedTask = null;
+            this.statusBarSelectedTask.dispose();
+            this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
+            return true;
+        }
+        return false;
+    }
+
     private initTimer(startCommand: Commands, restartCommand: Commands) {
         this.timer = new Timer(this.startTimeInMinutes * 60);
         this.statusBarAction.command = startCommand;

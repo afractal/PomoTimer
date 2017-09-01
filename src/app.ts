@@ -18,6 +18,14 @@ export const createApp = (context: ExtensionContext) => {
         timerComponent.setCurrentWorkingTask(Commands.DisplayTaskboard, selectedTaskPick.task);
     });
 
+    MessagingCenter.subscribe(Messages.DetachTask, (selectedTaskPick: TaskPick) => {
+        const wasRemoved = timerComponent.removeCurrentWorkingTask(selectedTaskPick.task);
+        if (wasRemoved) {
+            timerComponent.timer.stop();
+            timerComponent.restartTimer(Commands.StartTimer, Commands.RestartTimer);
+        }
+    });
+
     MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
         if (timerComponent.selectedTask) {
             timerComponent.selectedTask.completedPomodori = completedPomodori;

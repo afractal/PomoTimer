@@ -69,6 +69,7 @@ export class TaskComponent {
 
         if (!taskPick) return;
 
+        MessagingCenter.publish(Messages.DetachTask, taskPick);
         await this.taskStorage.removeAsync(taskPick.label);
         await this.showTaskboard();
     };

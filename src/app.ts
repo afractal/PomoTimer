@@ -1,6 +1,7 @@
-import { workspace, commands, ExtensionContext } from 'vscode';
+import { window, workspace, commands, ExtensionContext } from 'vscode';
 import { TimerComponent } from './timer-component';
-import { TaskComponent } from './taskboard-component';
+import { TaskBoardComponent } from './taskboard-component';
+import { CurrentTaskComponent } from './current-task-component';
 import { MessagingCenter } from './messaging-center';
 import { Commands } from './types/commands';
 import { Messages } from './types/messages';
@@ -10,26 +11,41 @@ import { TaskStorage } from './task-storage';
 export const createApp = (context: ExtensionContext) => {
     const config = workspace.getConfiguration('pomotimer')
     let configMinutes = config.get<number>('workTime') || 20;
-    let timerComponent = new TimerComponent(configMinutes, Commands.StartTimer, Commands.RestartTimer);
-    let taskComponent = new TaskComponent(context.globalState);
+    let timerComponent = new TimerComponent(configMinutes, Commands.StartTimer);
+    let taskComponent = new TaskBoardComponent(context.globalState);
+    let currentTaskComponent = new CurrentTaskComponent();
     let taskStorage = new TaskStorage(context.globalState);
 
+    timerComponent.onTimeCompleted(() => {
+        const currentWorkingTask = currentTaskComponent.selectedTask;
+        window.showInformationMessage('Time for a break');
+
+        if (currentWorkingTask && currentWorkingTask.completedPomodori < currentWorkingTask.estimatedPomodori) {
+            currentWorkingTask.completedPomodori += 1;
+            currentTaskComponent.statusBarSelectedTask.text = `${currentWorkingTask.name} - ${currentWorkingTask.completedPomodori}/${currentWorkingTask.estimatedPomodori}`;
+            MessagingCenter.publish(Messages.UpdatePomodoriCounter, currentWorkingTask.completedPomodori);
+        }
+    }, Commands.RestartTimer);
+
+
     MessagingCenter.subscribe(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
-        timerComponent.setCurrentWorkingTask(Commands.DisplayTaskboard, selectedTaskPick.task);
+        currentTaskComponent.setCurrentWorkingTask(Commands.DisplayTaskboard, selectedTaskPick.task);
+        currentTaskComponent.display();
+        timerComponent.displayTimer();
     });
 
     MessagingCenter.subscribe(Messages.DetachTask, (selectedTaskPick: TaskPick) => {
-        const wasRemoved = timerComponent.removeCurrentWorkingTask(selectedTaskPick.task);
+        const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTaskPick.task);
         if (wasRemoved) {
             timerComponent.timer.stop();
-            timerComponent.restartTimer(Commands.StartTimer, Commands.RestartTimer);
+            timerComponent.restartTimer(Commands.StartTimer);
         }
     });
 
     MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
-        if (timerComponent.selectedTask) {
-            timerComponent.selectedTask.completedPomodori = completedPomodori;
-            await taskStorage.updateAsync(timerComponent.selectedTask);
+        if (currentTaskComponent.selectedTask) {
+            currentTaskComponent.selectedTask.completedPomodori = completedPomodori;
+            await taskStorage.updateAsync(currentTaskComponent.selectedTask);
         }
     });
 
@@ -38,7 +54,7 @@ export const createApp = (context: ExtensionContext) => {
     });
 
     const startTimerCommand = commands.registerCommand(Commands.StartTimer, async () => {
-        if (!timerComponent.selectedTask) {
+        if (!currentTaskComponent.selectedTask) {
             await taskComponent.showTaskboard();
         } else {
             timerComponent.startTimer(Commands.PauseTimer);
@@ -54,7 +70,7 @@ export const createApp = (context: ExtensionContext) => {
     });
 
     const restartTimerCommand = commands.registerCommand(Commands.RestartTimer, () => {
-        timerComponent.restartTimer(Commands.StartTimer, Commands.RestartTimer);
+        timerComponent.restartTimer(Commands.StartTimer);
     });
 
     const hideTimerCommand = commands.registerCommand(Commands.HideTimer, () => {

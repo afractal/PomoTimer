@@ -1,6 +1,8 @@
 environment:
     ELECTRON_NO_ATTACH_CONSOLE: 1
 
+version: 0.0.{build}
+
 install:
     - ps: Install-Product node 7 x64
     - npm install -g npm

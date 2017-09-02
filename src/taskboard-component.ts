@@ -6,7 +6,7 @@ import { Messages } from './types/messages';
 import { Task } from "./types/task";
 import { TaskPick } from "./types/task-pick";
 
-export class TaskComponent {
+export class TaskBoardComponent {
     constructor(memento: Memento) {
         this.taskStorage = new TaskStorage(memento);
     }
@@ -30,7 +30,7 @@ export class TaskComponent {
         const taskPicks = this.getTaskPicks();
 
         const taskPick = await window.showQuickPick(taskPicks, {
-            placeHolder: 'Choose a task to add to the timer'
+            placeHolder: 'Choose the task you want to add to the timer'
         });
 
         if (!taskPick) return;

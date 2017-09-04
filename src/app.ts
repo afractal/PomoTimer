@@ -1,87 +1,57 @@
-import { window, workspace, commands, ExtensionContext } from 'vscode';
+import { window, workspace, ExtensionContext } from 'vscode';
 import { TimerComponent } from './timer-component';
 import { TaskBoardComponent } from './taskboard-component';
 import { CurrentTaskComponent } from './current-task-component';
-import { MessagingCenter } from './messaging-center';
-import { Commands } from './types/commands';
 import { Messages } from './types/messages';
 import { TaskPick } from './types/task-pick';
-import { TaskStorage } from './task-storage';
 
-export const createApp = (context: ExtensionContext) => {
+import { displayTaskboardCommand } from './commands/display-taskboard-command';
+import { displayTimerCommand } from './commands/display-timer-command';
+import { hideTimerCommand } from './commands/hide-timer-command';
+import { pauseTimerCommand } from './commands/pause-timer-command';
+import { restartTimerCommand } from './commands/restart-timer-command';
+import { resumeTimerCommand } from './commands/resume-timer-command';
+import { startTimerCommand } from './commands/start-timer-command';
+
+export const createApp = async (context: ExtensionContext) => {
     const config = workspace.getConfiguration('pomotimer')
-    let configMinutes = config.get<number>('workTime') || 20;
-    let timerComponent = new TimerComponent(configMinutes, Commands.StartTimer);
-    let taskComponent = new TaskBoardComponent(context.globalState);
-    let currentTaskComponent = new CurrentTaskComponent();
-    let taskStorage = new TaskStorage(context.globalState);
+    const configMinutes = config.get<number>('workTime') || 25;
 
-    timerComponent.onTimeCompleted(() => {
-        const currentWorkingTask = currentTaskComponent.selectedTask;
+    let timerComponent = new TimerComponent(configMinutes);
+    let taskboadComponent = new TaskBoardComponent(context.globalState);
+    let currentTaskComponent = new CurrentTaskComponent(context.globalState);
+
+    console.log("fsdfs")
+
+    timerComponent.on(Messages.TimerElapsed, () => {
         window.showInformationMessage('Time for a break');
+        currentTaskComponent.incrementPomodoriCounter();
+    });
 
-        if (currentWorkingTask && currentWorkingTask.completedPomodori < currentWorkingTask.estimatedPomodori) {
-            currentWorkingTask.completedPomodori += 1;
-            currentTaskComponent.statusBarSelectedTask.text = `${currentWorkingTask.name} - ${currentWorkingTask.completedPomodori}/${currentWorkingTask.estimatedPomodori}`;
-            MessagingCenter.publish(Messages.UpdatePomodoriCounter, currentWorkingTask.completedPomodori);
-        }
-    }, Commands.RestartTimer);
-
-
-    MessagingCenter.subscribe(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
-        currentTaskComponent.setCurrentWorkingTask(Commands.DisplayTaskboard, selectedTaskPick.task);
-        currentTaskComponent.display();
+    taskboadComponent.on(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
+        currentTaskComponent.setCurrentWorkingTask(selectedTaskPick.task);
+        currentTaskComponent.displayCurrentTask();
         timerComponent.displayTimer();
     });
 
-    MessagingCenter.subscribe(Messages.DetachTask, (selectedTaskPick: TaskPick) => {
+    taskboadComponent.on(Messages.DetachTask, (selectedTaskPick: TaskPick) => {
         const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTaskPick.task);
         if (wasRemoved) {
-            timerComponent.timer.stop();
-            timerComponent.restartTimer(Commands.StartTimer);
+            timerComponent.restartTimer();
         }
     });
 
-    MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
-        if (currentTaskComponent.selectedTask) {
-            currentTaskComponent.selectedTask.completedPomodori = completedPomodori;
-            await taskStorage.updateAsync(currentTaskComponent.selectedTask);
-        }
+    currentTaskComponent.on(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
+        await currentTaskComponent.updatePomodoroCounter(completedPomodori);
     });
 
-    const displayTimerCommand = commands.registerCommand(Commands.DisplayTimer, async () => {
-        timerComponent.displayTimer();
-    });
-
-    const startTimerCommand = commands.registerCommand(Commands.StartTimer, async () => {
-        if (!currentTaskComponent.selectedTask) {
-            await taskComponent.showTaskboard();
-        } else {
-            timerComponent.startTimer(Commands.PauseTimer);
-        }
-    });
-
-    const pauseTimerCommand = commands.registerCommand(Commands.PauseTimer, () => {
-        timerComponent.pauseTimer(Commands.ResumeTimer);
-    });
-
-    const resumeTimerCommand = commands.registerCommand(Commands.ResumeTimer, () => {
-        timerComponent.resumeTimer(Commands.PauseTimer);
-    });
-
-    const restartTimerCommand = commands.registerCommand(Commands.RestartTimer, () => {
-        timerComponent.restartTimer(Commands.StartTimer);
-    });
-
-    const hideTimerCommand = commands.registerCommand(Commands.HideTimer, () => {
-        timerComponent.hideTimer();
-    });
-
-    const displayTaskboardCommand = commands.registerCommand(Commands.DisplayTaskboard, async () => {
-        await taskComponent.showTaskboard();
-    });
-
-    context.subscriptions.push(displayTaskboardCommand, displayTimerCommand,
-        startTimerCommand, pauseTimerCommand, resumeTimerCommand,
-        restartTimerCommand, hideTimerCommand);
+    context.subscriptions.push(
+        displayTaskboardCommand(taskboadComponent),
+        displayTimerCommand(timerComponent),
+        startTimerCommand(timerComponent, currentTaskComponent, taskboadComponent),
+        pauseTimerCommand(timerComponent),
+        resumeTimerCommand(timerComponent),
+        restartTimerCommand(timerComponent),
+        hideTimerCommand(timerComponent, currentTaskComponent)
+    );
 };

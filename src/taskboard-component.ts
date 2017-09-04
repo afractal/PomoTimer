@@ -1,13 +1,14 @@
 import { window, QuickPickItem, Memento } from 'vscode';
 import { TaskStorage } from './task-storage';
-import { MessagingCenter } from './messaging-center';
 import { Pick } from './types/pick';
 import { Messages } from './types/messages';
 import { Task } from "./types/task";
 import { TaskPick } from "./types/task-pick";
+import { EventEmitter } from 'events';
 
-export class TaskBoardComponent {
+export class TaskBoardComponent extends EventEmitter {
     constructor(memento: Memento) {
+        super();
         this.taskStorage = new TaskStorage(memento);
     }
 
@@ -35,7 +36,7 @@ export class TaskBoardComponent {
 
         if (!taskPick) return;
 
-        MessagingCenter.publish(Messages.AttachTask, taskPick);
+        this.emit(Messages.AttachTask, taskPick);
     }
 
     private async showAddPickerAsync() {
@@ -69,7 +70,7 @@ export class TaskBoardComponent {
 
         if (!taskPick) return;
 
-        MessagingCenter.publish(Messages.DetachTask, taskPick);
+        this.emit(Messages.DetachTask, taskPick);
         await this.taskStorage.removeAsync(taskPick.label);
         await this.showTaskboard();
     };

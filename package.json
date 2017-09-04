@@ -30,8 +30,13 @@
         "Other"
     ],
     "activationEvents": [
+        "onCommand:pomotimer.displayTaskboard",
         "onCommand:pomotimer.displayTimer",
-        "onCommand:pomotimer.displayTaskboard"
+        "onCommand:pomotimer.hideTimer",
+        "onCommand:pomotimer.startTimer",
+        "onCommand:pomotimer.pauseTimer",
+        "onCommand:pomotimer.resumeTimer",
+        "onCommand:pomotimer.restartTimer"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -41,15 +46,15 @@
             "properties": {
                 "pomotimer.workTime": {
                     "type": "number",
-                    "default": 1
-                },
-                "pomotimer.breakTime": {
-                    "type": "number",
-                    "default": 5
+                    "default": 25
                 }
             }
         },
         "commands": [
+            {
+                "title": "Display Taskboard",
+                "command": "pomotimer.displayTaskboard"
+            },
             {
                 "title": "Display Pomodoro Timer",
                 "command": "pomotimer.displayTimer"
@@ -59,25 +64,64 @@
                 "command": "pomotimer.hideTimer"
             },
             {
-                "title": "Display Taskboard",
-                "command": "pomotimer.displayTaskboard"
+                "title": "Start Pomodoro Timer",
+                "command": "pomotimer.startTimer"
+            },
+            {
+                "title": "Pause Pomodoro Timer",
+                "command": "pomotimer.pauseTimer"
+            },
+            {
+                "title": "Resume Pomodoro Timer",
+                "command": "pomotimer.resumeTimer"
+            },
+            {
+                "title": "Restart Pomodoro Timer",
+                "command": "pomotimer.restartTimer"
             }
         ],
         "keybindings": [
             {
                 "command": "pomotimer.displayTaskboard",
                 "key": "ctrl+alt+t",
-                "win": "ctrl+alt+t"
+                "win": "ctrl+alt+t",
+                "mac": "cmd+alt+t"
             },
             {
                 "command": "pomotimer.displayTimer",
                 "key": "ctrl+alt+d",
-                "win": "ctrl+alt+d"
+                "win": "ctrl+alt+d",
+                "mac": "cmd+alt+d"
             },
             {
                 "command": "pomotimer.hideTimer",
                 "key": "ctrl+alt+h",
-                "win": "ctrl+alt+h"
+                "win": "ctrl+alt+h",
+                "mac": "cmd+alt+h"
+            },
+            {
+                "command": "pomotimer.startTimer",
+                "key": "ctrl+alt+s",
+                "win": "ctrl+alt+s",
+                "mac": "cmd+alt+s"
+            },
+            {
+                "command": "pomotimer.pauseTimer",
+                "key": "ctrl+alt+p",
+                "win": "ctrl+alt+p",
+                "mac": "cmd+alt+p"
+            },
+            {
+                "command": "pomotimer.resumeTimer",
+                "key": "ctrl+alt+r",
+                "win": "ctrl+alt+r",
+                "mac": "cmd+alt+r"
+            },
+            {
+                "command": "pomotimer.restartTimer",
+                "key": "ctrl+alt+shift+r",
+                "win": "ctrl+alt+shift+r",
+                "mac": "cmd+alt+shift+r"
             }
         ]
     },
@@ -102,6 +146,7 @@
         "vscode": "^1.0.0"
     },
     "dependencies": {
+        "reflect-metadata": "^0.1.10",
         "sharp-timer": "^0.1.3"
     }
 }

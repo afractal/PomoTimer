@@ -47,7 +47,7 @@ export const createApp = async (context: ExtensionContext) => {
 
     context.subscriptions.push(
         displayTaskboardCommand(taskboadComponent),
-        displayTimerCommand(timerComponent),
+        displayTimerCommand(timerComponent, currentTaskComponent),
         startTimerCommand(timerComponent, currentTaskComponent, taskboadComponent),
         pauseTimerCommand(timerComponent),
         resumeTimerCommand(timerComponent),

@@ -24,7 +24,9 @@ export class CurrentTaskComponent extends EventEmitter {
     set statusBarSelectedTask(value) { this._statusBarSelectedTask = value; }
 
     displayCurrentTask() {
-        this.statusBarSelectedTask.show();
+        if (this.selectedTask) {
+            this.statusBarSelectedTask.show();
+        }
     }
 
     hideCurrentTask() {

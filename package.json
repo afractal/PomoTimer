@@ -2,7 +2,7 @@
     "name": "pomotimer",
     "displayName": "PomoTimer",
     "description": "Fancy pomodoro timer in your status bar.",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "publisher": "afractal",
     "license": "MIT",
     "homepage": "https://github.com/afractal/PomoTimer",

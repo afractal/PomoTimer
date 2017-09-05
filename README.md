@@ -8,11 +8,14 @@
 
 ## Changes
 
-*v.0.2.0*
+*v.0.2.\**
 
 - add and integrate taskboard with timer
+- add pomodori counter for tasks
+- bug on hiding/displaying timer
+- bug on removing the current task, it should be removed from the timer
 
-*v0.1.0*
+*v0.1.\**
 
 - add basic pomodoro timer functionality
 

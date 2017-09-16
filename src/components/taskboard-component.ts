@@ -1,18 +1,18 @@
 import { window, QuickPickItem, Memento } from 'vscode';
-import { TaskStorage } from './task-storage';
-import { Pick } from './types/pick';
-import { Messages } from './types/messages';
-import { Task } from "./types/task";
-import { TaskPick } from "./types/task-pick";
+import { TaskStore } from '../services/task-store';
+import { Pick } from '../types/pick';
+import { Messages } from '../types/messages';
+import { Task } from "../types/task";
+import { TaskPick } from "../types/task-pick";
 import { EventEmitter } from 'events';
 
 export class TaskBoardComponent extends EventEmitter {
     constructor(memento: Memento) {
         super();
-        this.taskStorage = new TaskStorage(memento);
+        this.taskStore = new TaskStore(memento);
     }
 
-    taskStorage: TaskStorage;
+    taskStore: TaskStore;
 
     async showTaskboard() {
         const choosePick: Pick = { kind: 'choose', label: 'Choose task from board', description: '' };
@@ -57,7 +57,7 @@ export class TaskBoardComponent extends EventEmitter {
             estimatedPomodori: +taskEstimatedPomodori,
             completedPomodori: 0
         };
-        await this.taskStorage.insertAsync(task);
+        await this.taskStore.insertAsync(task);
         await this.showTaskboard();
     }
 
@@ -71,7 +71,7 @@ export class TaskBoardComponent extends EventEmitter {
         if (!taskPick) return;
 
         this.emit(Messages.DetachTask, taskPick);
-        await this.taskStorage.removeAsync(taskPick.label);
+        await this.taskStore.removeAsync(taskPick.label);
         await this.showTaskboard();
     };
 
@@ -97,7 +97,7 @@ export class TaskBoardComponent extends EventEmitter {
     };
 
     private async getTaskPicks() {
-        return this.taskStorage.getTasks()
+        return this.taskStore.getTasks()
             .map(t => ({
                 label: t.name,
                 description: `${t.completedPomodori}/${t.estimatedPomodori}`,

@@ -5,5 +5,7 @@ export enum Commands {
     ResumeTimer = 'pomotimer.resumeTimer',
     RestartTimer = 'pomotimer.restartTimer',
     HideTimer = 'pomotimer.hideTimer',
-    DisplayTaskboard = 'pomotimer.displayTaskboard'
+    DisplayTaskboard = 'pomotimer.displayTaskboard',
+
+    StartBreakTimer = 'pomotimer.startBreakTimer'
 }

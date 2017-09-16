@@ -1,25 +1,37 @@
 import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { Timer } from 'sharp-timer';
-import { Commands } from './types/command-defs';
+import { Commands } from '../types/command-defs';
 import { EventEmitter } from 'events';
-import { Messages } from './types/messages';
+import { Messages } from '../types/messages';
 
-type Action = () => void;
+/*
+    initial state -> can only start
+    running state -> can pause and restart
+    paused state -> can start and restart
+*/
+
+interface ITimerComponent { }
+
+class UnStartedTimerComponent implements ITimerComponent { }
+class RunningTimerComponent implements ITimerComponent { }
+class PausedTimerComponent implements ITimerComponent { }
+
 
 export class TimerComponent extends EventEmitter {
     private readonly statusBarClock: StatusBarItem;
     private readonly statusBarAction: StatusBarItem;
+    private readonly pomodoroSizeInMinutes: number;
     private timer: Timer;
+    private isRunning: boolean;
 
-    constructor(private readonly startTimerInMinutes: number) {
+    constructor(pomodoroSizeInMinutes: number) {
         super();
-        this._isRunning = false;
+        this.isRunning = false;
+        this.pomodoroSizeInMinutes = pomodoroSizeInMinutes;
         this.statusBarClock = window.createStatusBarItem(StatusBarAlignment.Right, 2);
         this.statusBarAction = window.createStatusBarItem(StatusBarAlignment.Right, 3);
-        this.initTimer();
+        this.initializeTimer();
     }
-
-    private _isRunning: boolean;
 
     displayTimer() {
         this.statusBarClock.show();
@@ -27,9 +39,9 @@ export class TimerComponent extends EventEmitter {
     }
 
     startTimer() {
-        if (this._isRunning) return;
+        if (this.isRunning) return;
 
-        this._isRunning = true;
+        this.isRunning = true;
         this.timer.start();
         this.statusBarAction.command = Commands.PauseTimer;
         this.statusBarAction.tooltip = 'Pause timer';
@@ -51,8 +63,8 @@ export class TimerComponent extends EventEmitter {
 
     restartTimer() {
         this.timer.stop();
-        this._isRunning = false;
-        this.initTimer();
+        this.isRunning = false;
+        this.initializeTimer();
     }
 
     hideTimer() {
@@ -60,14 +72,14 @@ export class TimerComponent extends EventEmitter {
         this.statusBarClock.hide();
     }
 
-    private initTimer() {
-        this.timer = new Timer(this.startTimerInMinutes * 60);
+    private initializeTimer() {
+        this.timer = new Timer(this.pomodoroSizeInMinutes * 60);
         this.statusBarAction.command = Commands.StartTimer;
         this.statusBarAction.text = '$(triangle-right)';
         this.statusBarAction.tooltip = 'Start timer';
         this.statusBarClock.text = `${this.timer.toString()}`;
 
-        this.timer.onIntervalElapsing((r: number) => {
+        this.timer.onIntervalElapsing((_: number) => {
             this.statusBarAction.text = '$(primitive-square)';
             this.statusBarClock.text = `${this.timer.toString()}`;
             this.emit(Messages.TimerElapsing);

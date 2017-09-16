@@ -1,7 +1,7 @@
 import { Memento } from 'vscode';
-import { Task } from './types/task';
+import { Task } from '../types/task';
 
-export class TaskStorage {
+export class TaskStore {
     private readonly mementoKey = 'tasks';
 
     constructor(private readonly memento: Memento) { }

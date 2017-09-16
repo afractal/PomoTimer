@@ -47,6 +47,10 @@
                 "pomotimer.workTime": {
                     "type": "number",
                     "default": 25
+                },
+                "pomotimer.breakTime": {
+                    "type": "number",
+                    "default": 5
                 }
             }
         },

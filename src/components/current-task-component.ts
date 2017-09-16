@@ -1,19 +1,19 @@
 import { window, StatusBarItem, StatusBarAlignment, Memento } from 'vscode';
-import { Commands } from './types/command-defs';
-import { Task } from './types/task';
+import { Commands } from '../types/command-defs';
+import { Task } from '../types/task';
 import { EventEmitter } from 'events';
-import { Messages } from './types/messages';
-import { TaskStorage } from './task-storage';
+import { Messages } from '../types/messages';
+import { TaskStore } from '../services/task-store';
 
 export class CurrentTaskComponent extends EventEmitter {
     constructor(memento: Memento) {
         super();
         this.selectedTask = null;
         this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
-        this.taskStorage = new TaskStorage(memento);
+        this.taskStore = new TaskStore(memento);
     }
 
-    taskStorage: TaskStorage;
+    taskStore: TaskStore;
 
     private _selectedTask: Task | null;
     get selectedTask() { return this._selectedTask; }
@@ -45,7 +45,7 @@ export class CurrentTaskComponent extends EventEmitter {
     async updatePomodoroCounter(pomodoroCounter: number) {
         if (this.selectedTask) {
             this.selectedTask.completedPomodori = pomodoroCounter;
-            await this.taskStorage.updateAsync(this.selectedTask);
+            await this.taskStore.updateAsync(this.selectedTask);
         }
     }
 

@@ -1,6 +1,11 @@
 import { commands, Disposable } from "vscode";
 import { assert } from 'chai';
 
+
+// "types": [
+//     "reflect-metadata"
+// ],
+
 suite('taskboard component tests', () => {
     let taskboardCommand: Disposable;
     const beforeEach = () => {

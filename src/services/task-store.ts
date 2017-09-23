@@ -1,13 +1,15 @@
 import { Memento } from 'vscode';
-import { Task } from '../types/task';
+import Task = PomoTimer.Task;
+import ITaskStore = PomoTimer.ITaskStore;
 
-export class TaskStore {
+export class TaskStore implements ITaskStore {
     private readonly mementoKey = 'tasks';
 
     constructor(private readonly memento: Memento) { }
 
-    getTasks() {
-        return this.memento.get<Array<Task>>(this.mementoKey, []);
+    getTasks(): Array<Task> {
+        type TaskArray = Array<Task>;
+        return this.memento.get<TaskArray>(this.mementoKey, new Array<Task>()) as TaskArray;
     }
 
     async insertAsync(task: Task) {

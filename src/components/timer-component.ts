@@ -1,8 +1,9 @@
 import { window, StatusBarAlignment, StatusBarItem } from 'vscode';
 import { Timer } from 'sharp-timer';
-import { Commands } from '../types/command-defs';
 import { EventEmitter } from 'events';
-import { Messages } from '../types/messages';
+
+import CommandMappingsEnum = PomoTimer.CommandMappingsEnum;
+import Messages = PomoTimer.Messages;
 
 /*
     initial state -> can only start
@@ -43,13 +44,13 @@ export class TimerComponent extends EventEmitter {
 
         this.isRunning = true;
         this.timer.start();
-        this.statusBarAction.command = Commands.PauseTimer;
+        this.statusBarAction.command = CommandMappingsEnum.PauseTimer;
         this.statusBarAction.tooltip = 'Pause timer';
     }
 
     pauseTimer() {
         this.timer.pause();
-        this.statusBarAction.command = Commands.ResumeTimer;
+        this.statusBarAction.command = CommandMappingsEnum.ResumeTimer;
         this.statusBarAction.tooltip = 'Start timer';
         this.statusBarAction.text = '$(triangle-right)';
         this.statusBarClock.text = `${this.timer.toString()}`;
@@ -57,7 +58,7 @@ export class TimerComponent extends EventEmitter {
 
     resumeTimer() {
         this.timer.resume();
-        this.statusBarAction.command = Commands.PauseTimer;
+        this.statusBarAction.command = CommandMappingsEnum.PauseTimer;
         this.statusBarAction.tooltip = 'Pause timer';
     }
 
@@ -74,7 +75,7 @@ export class TimerComponent extends EventEmitter {
 
     private initializeTimer() {
         this.timer = new Timer(this.pomodoroSizeInMinutes * 60);
-        this.statusBarAction.command = Commands.StartTimer;
+        this.statusBarAction.command = CommandMappingsEnum.StartTimer;
         this.statusBarAction.text = '$(triangle-right)';
         this.statusBarAction.tooltip = 'Start timer';
         this.statusBarClock.text = `${this.timer.toString()}`;
@@ -86,7 +87,7 @@ export class TimerComponent extends EventEmitter {
         });
 
         this.timer.onIntervalElapsed(() => {
-            this.statusBarAction.command = Commands.RestartTimer;
+            this.statusBarAction.command = CommandMappingsEnum.RestartTimer;
             this.statusBarAction.text = '$(sync)';
             this.statusBarAction.tooltip = 'Restart timer';
             this.statusBarClock.text = `${this.timer.toString()}`;

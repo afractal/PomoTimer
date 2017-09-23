@@ -1,5 +1,6 @@
-import { QuickPickItem } from 'vscode';
+namespace PomoTimer {
 
-export interface Pick extends QuickPickItem {
-    kind: 'add' | 'mark' | 'remove' | 'choose';
+    export interface Pick extends IQuickPickItem {
+        kind: 'add' | 'mark' | 'remove' | 'choose';
+    }
 }

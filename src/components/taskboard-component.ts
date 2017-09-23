@@ -1,12 +1,15 @@
 import { window, QuickPickItem, Memento } from 'vscode';
 import { TaskStore } from '../services/task-store';
-import { Pick } from '../types/pick';
-import { Messages } from '../types/messages';
-import { Task } from "../types/task";
-import { TaskPick } from "../types/task-pick";
 import { EventEmitter } from 'events';
+import { injectable } from 'inversify';
 
-export class TaskBoardComponent extends EventEmitter {
+import Pick = PomoTimer.Pick;
+import Messages = PomoTimer.Messages;
+import Task = PomoTimer.Task;
+import TaskPick = PomoTimer.TaskPick;
+
+@injectable()
+export class TaskBoardComponent extends EventEmitter implements PomoTimer.ITaskBoard {
     constructor(memento: Memento) {
         super();
         this.taskStore = new TaskStore(memento);

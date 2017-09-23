@@ -2,16 +2,10 @@ import { window, workspace, ExtensionContext, InputBoxOptions } from 'vscode';
 import { TimerComponent } from './components/timer-component';
 import { TaskBoardComponent } from './components/taskboard-component';
 import { CurrentTaskComponent } from './components/current-task-component';
-import { Messages } from './types/messages';
-import { TaskPick } from './types/task-pick';
+import { registerCommands } from './register-commands';
 
-import { displayTaskboardCommand } from './commands/display-taskboard-command';
-import { displayTimerCommand } from './commands/display-timer-command';
-import { hideTimerCommand } from './commands/hide-timer-command';
-import { pauseTimerCommand } from './commands/pause-timer-command';
-import { restartTimerCommand } from './commands/restart-timer-command';
-import { resumeTimerCommand } from './commands/resume-timer-command';
-import { startTimerCommand } from './commands/start-timer-command';
+import Messages = PomoTimer.Messages;
+import TaskPick = PomoTimer.TaskPick;
 
 export const createApp = async (context: ExtensionContext) => {
     const config = workspace.getConfiguration('pomotimer');
@@ -23,19 +17,36 @@ export const createApp = async (context: ExtensionContext) => {
     let taskboadComponent = new TaskBoardComponent(context.globalState);
     let currentTaskComponent = new CurrentTaskComponent(context.globalState);
 
+    onTimerElapsed(workTimerComponent, currentTaskComponent);
+    onTaskAttached(workTimerComponent, taskboadComponent, currentTaskComponent);
+    onTaskDetached(workTimerComponent, taskboadComponent, currentTaskComponent);
+    onTaskCounterUpdated(currentTaskComponent);
+
+    await registerCommands(context);
+};
+
+const onTimerElapsed = (workTimerComponent: TimerComponent,
+    currentTaskComponent: CurrentTaskComponent) => {
     workTimerComponent.on(Messages.TimerElapsed, () => {
         window.showInformationMessage('Time for a break');
         workTimerComponent.hideTimer();
         currentTaskComponent.incrementPomodoriCounter();
-
-        // breakTimerComponent.displayTimer();
     });
+};
 
+const onTaskAttached = (workTimerComponent: TimerComponent,
+    taskboadComponent: TaskBoardComponent,
+    currentTaskComponent: CurrentTaskComponent) => {
     taskboadComponent.on(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
         currentTaskComponent.setCurrentWorkingTask(selectedTaskPick.task);
         currentTaskComponent.displayCurrentTask();
         workTimerComponent.displayTimer();
     });
+};
+
+const onTaskDetached = (workTimerComponent: TimerComponent,
+    taskboadComponent: TaskBoardComponent,
+    currentTaskComponent: CurrentTaskComponent) => {
 
     taskboadComponent.on(Messages.DetachTask, (selectedTaskPick: TaskPick) => {
         const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTaskPick.task);
@@ -43,18 +54,12 @@ export const createApp = async (context: ExtensionContext) => {
             workTimerComponent.restartTimer();
         }
     });
+};
 
+const onTaskCounterUpdated = (currentTaskComponent: CurrentTaskComponent) => {
     currentTaskComponent.on(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
         await currentTaskComponent.updatePomodoroCounter(completedPomodori);
     });
-
-    context.subscriptions.push(
-        displayTaskboardCommand(taskboadComponent),
-        displayTimerCommand(workTimerComponent, currentTaskComponent),
-        startTimerCommand(workTimerComponent, currentTaskComponent, taskboadComponent),
-        pauseTimerCommand(workTimerComponent),
-        resumeTimerCommand(workTimerComponent),
-        restartTimerCommand(workTimerComponent),
-        hideTimerCommand(workTimerComponent, currentTaskComponent)
-    );
 };
+
+

@@ -5,7 +5,7 @@
         "module": "commonjs",
         "outDir": "out",
         "lib": [
-            "es2015"
+            "es2017"
         ],
         "sourceMap": true,
         "strict": true,
@@ -14,7 +14,8 @@
         "rootDir": ".",
         "moduleResolution": "node",
         "typeRoots": [
-            "./node_modules/@types"
+            "./node_modules/@types",
+            "./node_modules/inversify/dts"
         ]
     },
     "exclude": [

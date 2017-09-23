@@ -1,9 +1,10 @@
 import { window, StatusBarItem, StatusBarAlignment, Memento } from 'vscode';
-import { Commands } from '../types/command-defs';
-import { Task } from '../types/task';
 import { EventEmitter } from 'events';
-import { Messages } from '../types/messages';
 import { TaskStore } from '../services/task-store';
+
+import CommandMappingsEnum = PomoTimer.CommandMappingsEnum;
+import Task = PomoTimer.Task;
+import Messages = PomoTimer.Messages;
 
 export class CurrentTaskComponent extends EventEmitter {
     constructor(memento: Memento) {
@@ -52,7 +53,7 @@ export class CurrentTaskComponent extends EventEmitter {
     setCurrentWorkingTask(selectedTask: Task) {
         this.selectedTask = selectedTask;
         this.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
-        this.statusBarSelectedTask.command = Commands.DisplayTaskboard;
+        this.statusBarSelectedTask.command = CommandMappingsEnum.DisplayTaskboard;
         this.statusBarSelectedTask.tooltip = 'Current working task';
         this.statusBarSelectedTask.color = '#bfbfbf';
     }

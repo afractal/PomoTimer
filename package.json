@@ -150,6 +150,7 @@
         "vscode": "^1.0.0"
     },
     "dependencies": {
+        "inversify": "^4.3.0",
         "reflect-metadata": "^0.1.10",
         "sharp-timer": "^0.1.3"
     }

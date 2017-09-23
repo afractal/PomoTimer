@@ -1,8 +1,8 @@
-import { QuickPickItem } from 'vscode';
-import { Task } from "./task";
 
-export interface TaskPick extends QuickPickItem {
-    task: Task;
+namespace PomoTimer {
+
+    export interface TaskPick extends PomoTimer.IQuickPickItem {
+        task: Task;
+    }
 }
-
 

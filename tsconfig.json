@@ -15,7 +15,7 @@
         "moduleResolution": "node",
         "typeRoots": [
             "./node_modules/@types",
-            "./node_modules/inversify/dts"
+            "./node_modules/inversify/dts/*"
         ]
     },
     "exclude": [

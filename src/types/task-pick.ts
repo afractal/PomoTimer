@@ -1,8 +1,7 @@
+import { IQuickPickItem } from "./quickpick-interface";
+import { Task } from "./task";
 
-namespace PomoTimer {
-
-    export interface TaskPick extends PomoTimer.IQuickPickItem {
-        task: Task;
-    }
+export interface TaskPick extends IQuickPickItem {
+    task: Task;
 }
 

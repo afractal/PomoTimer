@@ -1,8 +1,5 @@
-namespace PomoTimer {
-
-    export type Task = {
-        name: string;
-        estimatedPomodori: number;
-        completedPomodori: number;
-    }
+export type Task = {
+    name: string;
+    estimatedPomodori: number;
+    completedPomodori: number;
 }

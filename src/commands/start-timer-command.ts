@@ -1,13 +1,11 @@
-import { CurrentTaskComponent } from '../components/current-task-component';
-import { TaskBoardComponent } from '../components/taskboard-component';
-import { TimerComponent } from '../components/timer-component';
+import { hasTaskAssigned } from '../components/current-task-component';
+import { showTaskboard } from '../components/taskboard-component';
+import { startTimer } from '../components/timer-component';
 
-export const startTimerCommand = async (timerComponent: TimerComponent,
-    currentTaskComponent: CurrentTaskComponent,
-    taskboadComponent: TaskBoardComponent) => {
-    if (!currentTaskComponent.selectedTask) {
-        await taskboadComponent.showTaskboard();
+export const startTimerCommand = async () => {
+    if (!hasTaskAssigned()) {
+        await showTaskboard();
     } else {
-        timerComponent.startTimer();
+        startTimer();
     }
 };

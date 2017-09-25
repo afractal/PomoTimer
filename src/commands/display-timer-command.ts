@@ -1,8 +1,7 @@
-import { TimerComponent } from '../components/timer-component';
-import { CurrentTaskComponent } from '../components/current-task-component';
+import { displayTimer } from '../components/timer-component';
+import { displayCurrentTask } from '../components/current-task-component';
 
-export const displayTimerCommand = (timerComponent: TimerComponent,
-    currentTaskComponent: CurrentTaskComponent) => {
-    timerComponent.displayTimer();
-    currentTaskComponent.displayCurrentTask();
+export const displayTimerCommand = () => {
+    displayTimer();
+    displayCurrentTask();
 };

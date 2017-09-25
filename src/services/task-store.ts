@@ -1,44 +1,56 @@
 import { Memento } from 'vscode';
-import Task = PomoTimer.Task;
-import ITaskStore = PomoTimer.ITaskStore;
+import { Task } from '../types/task';
 
-export class TaskStore implements ITaskStore {
-    private readonly mementoKey = 'tasks';
+const mementoKey = 'tasks';
 
-    constructor(private readonly memento: Memento) { }
+type TaskArray = Array<Task>;
 
-    getTasks(): Array<Task> {
-        type TaskArray = Array<Task>;
-        return this.memento.get<TaskArray>(this.mementoKey, new Array<Task>()) as TaskArray;
-    }
+export type TaskStore = {
+    memento: Memento;
+};
 
-    async insertAsync(task: Task) {
-        const tasks = this.getTasks().concat(task);
-        const values = new Set<Task>(tasks).values();
+let taskStore: TaskStore;
 
-        await this.memento.update(this.mementoKey, [...values]);
-    }
+export const init = (memento: Memento) => {
+    taskStore = {
+        memento: memento
+    };
+};
 
-    async updateAsync(task: Task) {
-        const tasks = this.getTasks()
-            .map(t => {
-                if (t.name == task.name) {
-                    t.completedPomodori = task.completedPomodori;
-                }
-                return t;
+export const getTasks = (): TaskArray => {
+    return taskStore.memento.get<TaskArray>(mementoKey, new Array<Task>()) as TaskArray;
+};
+
+export const insertAsync = async (task: Task) => {
+    const tasks = getTasks().concat(task);
+    const values = new Set<Task>(tasks).values();
+
+    await taskStore.memento.update(mementoKey, [...values]);
+};
+
+export const updateAsync = async (task: Task) => {
+    const tasks = getTasks()
+        .map(t => {
+            const completedPomodori = t.name == task.name ?
+                task.completedPomodori :
+                t.completedPomodori;
+
+            return Object.assign({}, t, {
+                completedPomodori: completedPomodori
             });
+        });
 
-        await this.memento.update(this.mementoKey, tasks);
-    }
+    await taskStore.memento.update(mementoKey, tasks);
+};
 
-    async removeAsync(taskName: string) {
-        const tasks = this.getTasks().filter(t => t.name !== taskName);
-        const values = new Set<Task>(tasks).values();
+export const removeAsync = async (taskName: string) => {
+    const tasks = getTasks().filter(t => t.name !== taskName);
+    const values = new Set<Task>(tasks).values();
 
-        await this.memento.update(this.mementoKey, [...values]);
-    }
+    await taskStore.memento.update(mementoKey, [...values]);
+};
 
-    async removeAllAsync() {
-        await this.memento.update(this.mementoKey, []);
-    }
-}
+export const removeAllAsync = async () => {
+    await taskStore.memento.update(mementoKey, []);
+};
+

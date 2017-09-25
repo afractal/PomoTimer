@@ -1,5 +1,5 @@
-import { TimerComponent } from '../components/timer-component';
+import { restartTimer } from '../components/timer-component';
 
-export const restartTimerCommand = (timerComponent: TimerComponent) => {
-    timerComponent.restartTimer();
+export const restartTimerCommand = () => {
+    restartTimer();
 };

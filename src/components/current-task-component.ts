@@ -1,70 +1,75 @@
 import { window, StatusBarItem, StatusBarAlignment, Memento } from 'vscode';
 import { EventEmitter } from 'events';
-import { TaskStore } from '../services/task-store';
+import { updateAsync } from '../services/task-store';
+import { Task } from '../types/task';
+import { Messages } from '../types/messages';
+import { CommandMappingsEnum } from '../types/command-mappings';
 
-import CommandMappingsEnum = PomoTimer.CommandMappingsEnum;
-import Task = PomoTimer.Task;
-import Messages = PomoTimer.Messages;
 
-export class CurrentTaskComponent extends EventEmitter {
-    constructor(memento: Memento) {
-        super();
-        this.selectedTask = null;
-        this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
-        this.taskStore = new TaskStore(memento);
+type CurrentTask = {
+    selectedTask: Task | null;
+    statusBarSelectedTask: StatusBarItem;
+    emitter: EventEmitter;
+};
+
+let currentTask: CurrentTask;
+
+export function init(memento: Memento) {
+    currentTask = {
+        selectedTask: null,
+        statusBarSelectedTask: window.createStatusBarItem(StatusBarAlignment.Right, 1),
+        emitter: new EventEmitter()
+    };
+};
+
+export const hasTaskAssigned = () => {
+    return currentTask.selectedTask != null;
+};
+
+export const getEmitter = () => {
+    return currentTask.emitter;
+};
+
+export const displayCurrentTask = () => {
+    if (currentTask.selectedTask) {
+        currentTask.statusBarSelectedTask.show();
     }
+};
 
-    taskStore: TaskStore;
+export const hideCurrentTask = () => {
+    currentTask.statusBarSelectedTask.hide();
+};
 
-    private _selectedTask: Task | null;
-    get selectedTask() { return this._selectedTask; }
-    set selectedTask(value) { this._selectedTask = value; }
-
-    private _statusBarSelectedTask: StatusBarItem;
-    get statusBarSelectedTask() { return this._statusBarSelectedTask; }
-    set statusBarSelectedTask(value) { this._statusBarSelectedTask = value; }
-
-    displayCurrentTask() {
-        if (this.selectedTask) {
-            this.statusBarSelectedTask.show();
-        }
+export const incrementPomodoriCounter = () => {
+    if (currentTask.selectedTask && currentTask.selectedTask.completedPomodori < currentTask.selectedTask.estimatedPomodori) {
+        currentTask.selectedTask.completedPomodori += 1;
+        currentTask.statusBarSelectedTask.text =
+            `${currentTask.selectedTask.name} - ${currentTask.selectedTask.completedPomodori}/${currentTask.selectedTask.estimatedPomodori}`;
+        currentTask.emitter.emit(Messages.UpdatePomodoriCounter, currentTask.selectedTask.completedPomodori);
     }
+};
 
-    hideCurrentTask() {
-        this.statusBarSelectedTask.hide();
+export const updatePomodoroCounter = async (pomodoroCounter: number) => {
+    if (currentTask.selectedTask) {
+        currentTask.selectedTask.completedPomodori = pomodoroCounter;
+        await updateAsync(currentTask.selectedTask);
     }
+};
 
-    incrementPomodoriCounter() {
-        if (this.selectedTask && this.selectedTask.completedPomodori < this.selectedTask.estimatedPomodori) {
-            this.selectedTask.completedPomodori += 1;
-            this.statusBarSelectedTask.text =
-                `${this.selectedTask.name} - ${this.selectedTask.completedPomodori}/${this.selectedTask.estimatedPomodori}`;
-            this.emit(Messages.UpdatePomodoriCounter, this.selectedTask.completedPomodori);
-        }
-    }
+export const setCurrentWorkingTask = (selectedTask: Task) => {
+    currentTask.selectedTask = selectedTask;
+    currentTask.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
+    currentTask.statusBarSelectedTask.command = CommandMappingsEnum.DisplayTaskboard;
+    currentTask.statusBarSelectedTask.tooltip = 'Current working task';
+    currentTask.statusBarSelectedTask.color = '#bfbfbf';
+};
 
-    async updatePomodoroCounter(pomodoroCounter: number) {
-        if (this.selectedTask) {
-            this.selectedTask.completedPomodori = pomodoroCounter;
-            await this.taskStore.updateAsync(this.selectedTask);
-        }
+export const removeCurrentWorkingTask = (selectedTask: Task) => {
+    if (currentTask.selectedTask && currentTask.selectedTask.name == selectedTask.name) {
+        currentTask.selectedTask = null;
+        currentTask.statusBarSelectedTask.dispose();
+        currentTask.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
+        return true;
     }
-
-    setCurrentWorkingTask(selectedTask: Task) {
-        this.selectedTask = selectedTask;
-        this.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
-        this.statusBarSelectedTask.command = CommandMappingsEnum.DisplayTaskboard;
-        this.statusBarSelectedTask.tooltip = 'Current working task';
-        this.statusBarSelectedTask.color = '#bfbfbf';
-    }
-
-    removeCurrentWorkingTask(selectedTask: Task) {
-        if (this.selectedTask && this.selectedTask.name == selectedTask.name) {
-            this.selectedTask = null;
-            this.statusBarSelectedTask.dispose();
-            this.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
-            return true;
-        }
-        return false;
-    }
-}
+    return false;
+};

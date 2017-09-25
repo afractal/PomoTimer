@@ -1,7 +1,7 @@
-import { TaskBoardComponent } from '../components/taskboard-component';
+import { showTaskboard } from '../components/taskboard-component';
 
-export const displayTaskboardCommand = async (taskboadComponent: TaskBoardComponent) => {
-    await taskboadComponent.showTaskboard();
+export const displayTaskboardCommand = () => {
+    showTaskboard();
 };
 
 

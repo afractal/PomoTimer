@@ -1,8 +1,5 @@
-namespace PomoTimer {
-
-    export interface IQuickPickItem {
-        label: string;
-        description: string;
-        detail?: string;
-    }
+export interface IQuickPickItem {
+    label: string;
+    description: string;
+    detail?: string;
 }

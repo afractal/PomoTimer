@@ -1,5 +1,5 @@
-import { TimerComponent } from '../components/timer-component';
+import { resumeTimer } from '../components/timer-component';
 
-export const resumeTimerCommand = (timerComponent: TimerComponent) => {
-    timerComponent.resumeTimer();
+export const resumeTimerCommand = () => {
+    resumeTimer();
 };

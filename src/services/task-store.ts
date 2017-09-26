@@ -5,7 +5,7 @@ const mementoKey = 'tasks';
 
 type TaskArray = Array<Task>;
 
-export type TaskStore = {
+type TaskStore = {
     memento: Memento;
 };
 

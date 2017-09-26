@@ -10,12 +10,8 @@ type Taskboard = {
     emitter: EventEmitter;
 };
 
-let taskboard: Taskboard;
-
-export const init = (memento: Memento) => {
-    taskboard = {
-        emitter: new EventEmitter()
-    };
+const taskboard: Taskboard = {
+    emitter: new EventEmitter()
 };
 
 export const getEmitter = () => {

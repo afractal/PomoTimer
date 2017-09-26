@@ -1,25 +1,20 @@
 import { window, StatusBarItem, StatusBarAlignment, Memento } from 'vscode';
 import { EventEmitter } from 'events';
 import { updateAsync } from '../services/task-store';
-import { Task } from '../types/task';
+import { Task, NoTask, ValidTask } from '../types/task';
 import { Messages } from '../types/messages';
 import { CommandMappingsEnum } from '../types/command-mappings';
 
-
 type CurrentTask = {
-    selectedTask: Task | null;
+    selectedTask: Task;
     statusBarSelectedTask: StatusBarItem;
     emitter: EventEmitter;
 };
 
-let currentTask: CurrentTask;
-
-export function init(memento: Memento) {
-    currentTask = {
-        selectedTask: null,
-        statusBarSelectedTask: window.createStatusBarItem(StatusBarAlignment.Right, 1),
-        emitter: new EventEmitter()
-    };
+const currentTask: CurrentTask = {
+    selectedTask: {} as NoTask,
+    statusBarSelectedTask: window.createStatusBarItem(StatusBarAlignment.Right, 1),
+    emitter: new EventEmitter()
 };
 
 export const hasTaskAssigned = () => {
@@ -41,7 +36,7 @@ export const hideCurrentTask = () => {
 };
 
 export const incrementPomodoriCounter = () => {
-    if (currentTask.selectedTask && currentTask.selectedTask.completedPomodori < currentTask.selectedTask.estimatedPomodori) {
+    if (currentTask.selectedTask.kind == 'valid' && currentTask.selectedTask.completedPomodori < currentTask.selectedTask.estimatedPomodori) {
         currentTask.selectedTask.completedPomodori += 1;
         currentTask.statusBarSelectedTask.text =
             `${currentTask.selectedTask.name} - ${currentTask.selectedTask.completedPomodori}/${currentTask.selectedTask.estimatedPomodori}`;
@@ -50,13 +45,13 @@ export const incrementPomodoriCounter = () => {
 };
 
 export const updatePomodoroCounter = async (pomodoroCounter: number) => {
-    if (currentTask.selectedTask) {
+    if (currentTask.selectedTask.kind == 'valid') {
         currentTask.selectedTask.completedPomodori = pomodoroCounter;
         await updateAsync(currentTask.selectedTask);
     }
 };
 
-export const setCurrentWorkingTask = (selectedTask: Task) => {
+export const setCurrentWorkingTask = (selectedTask: ValidTask) => {
     currentTask.selectedTask = selectedTask;
     currentTask.statusBarSelectedTask.text = `${selectedTask.name} - ${selectedTask.completedPomodori}/${selectedTask.estimatedPomodori}`;
     currentTask.statusBarSelectedTask.command = CommandMappingsEnum.DisplayTaskboard;
@@ -64,9 +59,9 @@ export const setCurrentWorkingTask = (selectedTask: Task) => {
     currentTask.statusBarSelectedTask.color = '#bfbfbf';
 };
 
-export const removeCurrentWorkingTask = (selectedTask: Task) => {
-    if (currentTask.selectedTask && currentTask.selectedTask.name == selectedTask.name) {
-        currentTask.selectedTask = null;
+export const removeCurrentWorkingTask = (selectedTask: ValidTask) => {
+    if (currentTask.selectedTask.kind == 'valid' && currentTask.selectedTask.name == selectedTask.name) {
+        currentTask.selectedTask = {} as NoTask;
         currentTask.statusBarSelectedTask.dispose();
         currentTask.statusBarSelectedTask = window.createStatusBarItem(StatusBarAlignment.Right, 1);
         return true;

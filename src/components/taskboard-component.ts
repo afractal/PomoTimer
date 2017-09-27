@@ -1,10 +1,12 @@
-import { window, QuickPickItem, Memento } from 'vscode';
+import { window } from 'vscode';
 import { insertAsync, removeAsync, getTasks } from '../services/task-store';
 import { EventEmitter } from 'events';
 import { Messages } from '../types/messages';
 import { Task } from '../types/task';
 import { TaskPick } from '../types/task-pick';
 import { Pick } from '../types/pick-interface';
+
+type ListenerDelegate = (taskPick: Task) => void;
 
 type Taskboard = {
     emitter: EventEmitter;
@@ -14,8 +16,12 @@ const taskboard: Taskboard = {
     emitter: new EventEmitter()
 };
 
-export const getEmitter = () => {
-    return taskboard.emitter;
+export const onTaskAttached = (listener: ListenerDelegate) => {
+    taskboard.emitter.on(Messages.AttachTask, listener);
+};
+
+export const onTaskDetached = (listener: ListenerDelegate) => {
+    taskboard.emitter.on(Messages.DetachTask, listener);
 };
 
 export const showTaskboard = async () => {
@@ -32,21 +38,19 @@ export const showTaskboard = async () => {
 };
 
 const showChoosePickerAsync = async () => {
-    const taskPicks = getTaskPicks();
-
-    const taskPick = await window.showQuickPick(taskPicks, {
+    const taskPick = await window.showQuickPick(getTaskPicks(), {
         placeHolder: 'Choose the task you want to add to the timer'
     });
 
     if (!taskPick) return;
 
-    taskboard.emitter.emit(Messages.AttachTask, taskPick);
+    taskboard.emitter.emit(Messages.AttachTask, taskPick.task);
 };
 
 const showAddPickerAsync = async () => {
     const taskName = await window.showInputBox({
         placeHolder: 'Enter the name of the task you want to add'
-    })
+    });
 
     if (!taskName) return;
 
@@ -61,20 +65,20 @@ const showAddPickerAsync = async () => {
         estimatedPomodori: +taskEstimatedPomodori,
         completedPomodori: 0
     };
+
     await insertAsync(task);
     await showTaskboard();
 };
 
 const showRemovePickerAsync = async () => {
-    const taskPicks = getTaskPicks();
-
-    const taskPick = await window.showQuickPick(taskPicks, {
+    const taskPick = await window.showQuickPick(getTaskPicks(), {
         placeHolder: 'Enter the name of the task you want to remove'
     });
 
     if (!taskPick) return;
 
     taskboard.emitter.emit(Messages.DetachTask, taskPick);
+
     await removeAsync(taskPick.label);
     await showTaskboard();
 };
@@ -101,10 +105,11 @@ const performActionAsync = async (picker: Pick | undefined) => {
 };
 
 const getTaskPicks = () => {
-    return getTasks()
-        .map(t => ({
+    return getTasks().map(t => {
+        return {
             label: t.name,
             description: `${t.completedPomodori}/${t.estimatedPomodori}`,
             task: t
-        } as TaskPick));
+        } as TaskPick;
+    });
 };

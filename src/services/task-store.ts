@@ -3,8 +3,6 @@ import { Task } from '../types/task';
 
 const mementoKey = 'tasks';
 
-type TaskArray = Array<Task>;
-
 type TaskStore = {
     memento: Memento;
 };
@@ -17,8 +15,8 @@ export const init = (memento: Memento) => {
     };
 };
 
-export const getTasks = (): TaskArray => {
-    return taskStore.memento.get<TaskArray>(mementoKey, new Array<Task>()) as TaskArray;
+export const getTasks = () => {
+    return taskStore.memento.get<Task[]>(mementoKey, new Array<Task>()) as Task[];
 };
 
 export const insertAsync = async (task: Task) => {

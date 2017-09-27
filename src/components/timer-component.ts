@@ -12,10 +12,11 @@ import { pomodoroSizeInMinutes } from '../services/configuration-manager';
     type TM = UnstartedTimer | RunningTimer | PausedTimer | ElapsedTimer;
 */
 
+type ListerDelegate = () => void;
+
 type TimerComponent = {
     statusBarClock: StatusBarItem;
     statusBarAction: StatusBarItem;
-    pomodoroSizeInMinutes: number;
     timer: Timer;
     isRunning: boolean;
     emitter: EventEmitter;
@@ -24,14 +25,17 @@ type TimerComponent = {
 const timerComponent: TimerComponent = {
     isRunning: false,
     timer: new Timer(pomodoroSizeInMinutes * 60),
-    pomodoroSizeInMinutes: pomodoroSizeInMinutes,
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3),
     emitter: new EventEmitter()
 };
 
-export const getEmitter = () => {
-    return timerComponent.emitter;
+export const onTimerElapsing = (listener: ListerDelegate) => {
+    timerComponent.emitter.on(Messages.TimerElapsing, listener);
+};
+
+export const onTimerElapsed = (listener: ListerDelegate) => {
+    timerComponent.emitter.on(Messages.TimerElapsed, listener);
 };
 
 export const displayTimer = () => {
@@ -73,7 +77,7 @@ export const restartTimer = () => {
     timerComponent.timer.stop();
     timerComponent.isRunning = false;
 
-    timerComponent.timer = new Timer(timerComponent.pomodoroSizeInMinutes * 60);
+    timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
     resetUi();
     hookUpEvents();
 };
@@ -82,7 +86,6 @@ export const hideTimer = () => {
     timerComponent.statusBarAction.hide();
     timerComponent.statusBarClock.hide();
 };
-
 
 const resetUi = () => {
     timerComponent.statusBarAction.command = CommandMappingsEnum.StartTimer;

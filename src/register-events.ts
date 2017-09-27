@@ -1,45 +1,42 @@
 import { ExtensionContext, window } from "vscode";
-
-import * as Timer from './components/timer-component';
-import * as Taskboard from './components/taskboard-component';
-import * as CurrentTask from './components/current-task-component';
-import { Messages } from "./types/messages";
-import { TaskPick } from "./types/task-pick";
+import { hideTimer, displayTimer, restartTimer, onTimerElapsed } from './components/timer-component';
+import { onTaskAttached, onTaskDetached } from './components/taskboard-component';
+import { incrementPomodoriCounter, setCurrentWorkingTask, displayCurrentTask, removeCurrentWorkingTask, updatePomodoroCounter, onPomodoroCounterUpdated } from './components/current-task-component';
 
 export const registerEvents = (context: ExtensionContext) => {
-    onTimerElapsed();
-    onTaskAttached();
-    onTaskDetached();
-    onTaskCounterUpdated();
+    registerTimerElapsed();
+    registerTaskAttached();
+    registerTaskDetached();
+    registerTaskCounterUpdated();
 };
 
-const onTimerElapsed = () => {
-    Timer.getEmitter().on(Messages.TimerElapsed, () => {
+const registerTimerElapsed = () => {
+    onTimerElapsed(() => {
         window.showInformationMessage('Time for a break');
-        Timer.hideTimer();
-        CurrentTask.incrementPomodoriCounter();
+        hideTimer();
+        incrementPomodoriCounter();
     });
 };
 
-const onTaskAttached = () => {
-    Taskboard.getEmitter().on(Messages.AttachTask, (selectedTaskPick: TaskPick) => {
-        CurrentTask.setCurrentWorkingTask(selectedTaskPick.task);
-        CurrentTask.displayCurrentTask();
-        Timer.displayTimer();
+const registerTaskAttached = () => {
+    onTaskAttached(selectedTask => {
+        setCurrentWorkingTask(selectedTask);
+        displayCurrentTask();
+        displayTimer();
     });
 };
 
-const onTaskDetached = () => {
-    Taskboard.getEmitter().on(Messages.DetachTask, (selectedTaskPick: TaskPick) => {
-        const wasRemoved = CurrentTask.removeCurrentWorkingTask(selectedTaskPick.task);
+const registerTaskDetached = () => {
+    onTaskDetached(selectedTask => {
+        const wasRemoved = removeCurrentWorkingTask(selectedTask);
         if (wasRemoved) {
-            Timer.restartTimer();
+            restartTimer();
         }
     });
 };
 
-const onTaskCounterUpdated = () => {
-    CurrentTask.getEmitter().on(Messages.UpdatePomodoriCounter, async (completedPomodori: number) => {
-        await CurrentTask.updatePomodoroCounter(completedPomodori);
+const registerTaskCounterUpdated = () => {
+    onPomodoroCounterUpdated(async (completedPomodori: number) => {
+        await updatePomodoroCounter(completedPomodori);
     });
 };

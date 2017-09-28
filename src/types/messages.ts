@@ -3,5 +3,7 @@ export enum Messages {
     DetachTask = 'detach-task',
     UpdatePomodoriCounter = 'update-pomodori-counter',
     TimerElapsed = 'timer-elapsed',
-    TimerElapsing = 'timer-elapsing'
+    TimerElapsing = 'timer-elapsing',
+    BreakTimerElapsed = 'break-timer-elapsed',
+    BreakTimerElapsing = 'break-timer-elapsed'
 }

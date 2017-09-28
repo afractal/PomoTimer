@@ -72,6 +72,10 @@
                 "command": "pomotimer.startTimer"
             },
             {
+                "title": "Start Pomodoro Timer",
+                "command": "pomotimer.startBreakTimer"
+            },
+            {
                 "title": "Pause Pomodoro Timer",
                 "command": "pomotimer.pauseTimer"
             },

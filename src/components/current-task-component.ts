@@ -13,14 +13,15 @@ type CurrentTask = {
     emitter: EventEmitter;
 };
 
-const currentTask: CurrentTask = {
+let currentTask: CurrentTask = {
     selectedTask: null,
     statusBarSelectedTask: window.createStatusBarItem(StatusBarAlignment.Right, 1),
     emitter: new EventEmitter()
 };
 
-export const hasTaskAssigned = currentTask.selectedTask != null;
-
+export const hasTaskAssigned = () => {
+    return currentTask.selectedTask != null;
+};
 
 export const onPomodoroCounterUpdated = (listener: ListenerDelegate) => {
     currentTask.emitter.on(Messages.UpdatePomodoriCounter, listener);

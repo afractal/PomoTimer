@@ -7,11 +7,14 @@ type BaseTimer = {
     statusBarAction: StatusBarItem;
     timer: Timer;
     isRunning: boolean;
+    // isShown: boolean;
     emitter: EventEmitter;
 };
 
-type WorkTimer = { kind: 'work' } & BaseTimer;
 
-type BreakTimer = { kind: 'break' } & BaseTimer;
+export type WorkTimer = BaseTimer & { kind: 'work' };
+
+export type BreakTimer = BaseTimer & { kind: 'break' };
 
 export type TimerKind = WorkTimer | BreakTimer
+

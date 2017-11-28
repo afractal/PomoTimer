@@ -3,5 +3,5 @@ import { Task } from "./task";
 
 export interface TaskPick extends IQuickPickItem {
     task: Task;
-}
+};
 

@@ -1,10 +1,11 @@
-import "reflect-metadata";
 import { ExtensionContext } from 'vscode';
 import { createApp } from './app';
+import { createStore, configureStore } from "./services/task-store";
 
-export async function activate(context: ExtensionContext) {
+export const activate = async (context: ExtensionContext) => {
+    configureStore(createStore(context));
     await createApp(context);
-}
+};
 
-export function deactivate() { }
+export const deactivate = () => { };
 

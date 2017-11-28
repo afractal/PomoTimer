@@ -1,8 +1,9 @@
 import { Timer } from 'sharp-timer';
 import { CommandMappingsEnum } from '../types/command-mappings';
 import { Messages } from '../types/messages';
-import { TimerKind } from '../types/timer-kind';
-import { pomodoroSizeInMinutes, breakSizeInMinutes } from '../services/configuration-manager';
+import { TimerKind, WorkTimer } from '../types/timer-kind';
+import { pomodoroSizeInMinutes, breakSizeInMinutes } from '../services/configuration-service';
+import { StatusBarItem, ParameterInformation } from 'vscode';
 
 /*
     initial state -> can only start
@@ -13,167 +14,112 @@ import { pomodoroSizeInMinutes, breakSizeInMinutes } from '../services/configura
 
 type ListerDelegate = () => void;
 
-export const onTimerElapsing = (timerComponent: TimerKind, listener: ListerDelegate) => {
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.emitter.on(Messages.TimerElapsing, listener);
-            break;
-        case 'break':
-            timerComponent.emitter.on(Messages.BreakTimerElapsing, listener);
-            break;
-    }
-};
+// export const onTimerElapsing = (timerComponent: TimerKind, listener: ListerDelegate) => {
+//     timerComponent.emitter.on(Messages.TimerElapsing, listener);
+// };
 
-export const onTimerElapsed = (timerComponent: TimerKind, listener: ListerDelegate) => {
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.emitter.on(Messages.TimerElapsed, listener);
-            break;
-        case 'break':
-            timerComponent.emitter.on(Messages.BreakTimerElapsed, listener);
-            break;
-    }
-};
 
-export const displayTimer = (timerComponent: TimerKind) => {
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.statusBarAction.command =
-                // timerComponent.statusBarAction.command ||
-                CommandMappingsEnum.StartTimer;
-            break;
-        case 'break':
-            timerComponent.statusBarAction.command = //timerComponent.statusBarAction.command ||
-                CommandMappingsEnum.StartBreakTimer;
-            break;
-    }
-    timerComponent.statusBarAction.text = timerComponent.statusBarAction.text || '$(triangle-right)';
-    timerComponent.statusBarAction.tooltip = timerComponent.statusBarAction.tooltip || 'Start timer';
-    timerComponent.statusBarClock.text = `${timerComponent.timer.toString()}`;
-
-    hookUpEvents(timerComponent);
-
-    timerComponent.statusBarClock.show();
-    timerComponent.statusBarAction.show();
-};
-
-export const startTimer = (timerComponent: TimerKind) => {
-    if (timerComponent.isRunning) return;
-
-    timerComponent.isRunning = true;
-    timerComponent.timer.start();
-
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.statusBarAction.command = CommandMappingsEnum.PauseTimer;
-            break;
-        case 'break':
-            timerComponent.statusBarAction.command = CommandMappingsEnum.PauseBreakTimer;
-            break;
+export class TimerComponent {
+    constructor(timerComponent: WorkTimer) {
+        this.timerComponent = timerComponent;
     }
 
-    timerComponent.statusBarAction.tooltip = 'Pause timer';
-};
+    private timerComponent: WorkTimer;
 
-export const pauseTimer = (timerComponent: TimerKind) => {
-    timerComponent.timer.pause();
-    timerComponent.statusBarAction.command = CommandMappingsEnum.ResumeTimer;
-    timerComponent.statusBarAction.tooltip = 'Start timer';
-    timerComponent.statusBarAction.text = '$(triangle-right)';
-    timerComponent.statusBarClock.text = `${timerComponent.timer.toString()}`;
-};
+    onTimerElapsed = (listener: ListerDelegate) => {
+        this.timerComponent.emitter.on(Messages.TimerElapsed, listener);
+    };
 
-export const resumeTimer = (timerComponent: TimerKind) => {
-    timerComponent.timer.resume();
-    timerComponent.statusBarAction.command = CommandMappingsEnum.PauseTimer;
-    timerComponent.statusBarAction.tooltip = 'Pause timer';
-};
+    displayTimer() {
+        this.createDisplayStatusAction();
+        this.timerComponent.statusBarClock.text = this.timerComponent.timer.toString();
 
-export const restartTimer = (timerComponent: TimerKind) => {
-    timerComponent.timer.stop();
-    timerComponent.isRunning = false;
-
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
-            break;
-        case 'break':
-            timerComponent.timer = new Timer(breakSizeInMinutes * 60);
-            break;
+        this.hookUpEvents();
+        this.timerComponent.statusBarClock.show();
+        this.timerComponent.statusBarAction.show();
     }
 
-    resetUi(timerComponent);
-    hookUpEvents(timerComponent);
-};
+    startTimer() {
+        if (this.timerComponent.isRunning) return;
 
-export const hideTimer = (timerComponent: TimerKind) => {
-    timerComponent.statusBarAction.hide();
-    timerComponent.statusBarClock.hide();
-};
-
-export const destroyTimer = (timerComponent: TimerKind) => {
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
-            break;
-        case 'break':
-            timerComponent.timer = new Timer(breakSizeInMinutes * 60);
-            break;
-    }
-};
-
-
-const resetUi = (timerComponent: TimerKind) => {
-    switch (timerComponent.kind) {
-        case 'work':
-            timerComponent.statusBarAction.command = CommandMappingsEnum.StartTimer;
-            break;
-        case 'break':
-            timerComponent.statusBarAction.command = CommandMappingsEnum.StartBreakTimer;
-            break;
+        this.timerComponent.isRunning = true;
+        this.timerComponent.timer.start();
+        this.timerComponent.statusBarAction = this.createStartStatusAction();
     }
 
-    timerComponent.statusBarAction.text = '$(triangle-right)';
-    timerComponent.statusBarAction.tooltip = 'Start timer';
-    timerComponent.statusBarClock.text = `${timerComponent.timer.toString()}`;
-};
+    pauseTimer() {
+        this.timerComponent.timer.pause();
+        this.timerComponent.statusBarAction = this.createPauseStatusAction();
+        this.timerComponent.statusBarClock.text = this.timerComponent.timer.toString();
+    }
 
-const hookUpEvents = (timerComponent: TimerKind) => {
-    timerComponent.timer.onIntervalElapsing((_: number) => {
-        timerComponent.statusBarAction.text = '$(primitive-square)';
-        timerComponent.statusBarClock.text = `${timerComponent.timer.toString()}`;
-        switch (timerComponent.kind) {
-            case 'work':
-                timerComponent.emitter.emit(Messages.TimerElapsing);
-                break;
-            case 'break':
-                timerComponent.emitter.emit(Messages.BreakTimerElapsing);
-                break;
-        }
+    resumeTimer() {
+        this.timerComponent.timer.resume();
+        this.timerComponent.statusBarAction = this.createResumeStatusAction();
+    }
+
+    restartTimer() {
+        this.timerComponent.timer.stop();
+        this.timerComponent.isRunning = false;
+
+        this.timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
+        this.timerComponent.statusBarAction = this.createStartStatusAction();
+        this.timerComponent.statusBarClock.text = this.timerComponent.timer.toString();
+        this.hookUpEvents();
+    }
+
+    hideTimer() {
+        this.timerComponent.statusBarAction.hide();
+        this.timerComponent.statusBarClock.hide();
+    }
+
+    destroyTimer() {
+        this.timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
+    }
+
+
+    private createDisplayStatusAction() {
+        this.timerComponent.statusBarAction.command = 'pomotimer.startTimer';
+        this.timerComponent.statusBarAction.text = '$(triangle-right)';
+        this.timerComponent.statusBarAction.tooltip = 'Start timer';
+    }
+
+    private createStartStatusAction = (): StatusBarItem => ({
+        ...this.timerComponent.statusBarAction,
+        command: CommandMappingsEnum.PauseTimer,
+        text: '$(triangle-right)',
+        tooltip: 'Pause timer'
     });
 
-    timerComponent.timer.onIntervalElapsed(() => {
-        // switch (timerComponent.kind) {
-        //     case 'work':
-        //         timerComponent.statusBarAction.command = CommandMappingsEnum.RestartTimer;
-        //         break;
-        //     case 'break':
-        //         timerComponent.statusBarAction.command = CommandMappingsEnum.RestartBreakTimer;
-        //         break;
-        // }
-
-        // timerComponent.statusBarAction.text = '$(sync)';
-        // timerComponent.statusBarAction.tooltip = 'Restart timer';
-        // timerComponent.statusBarClock.text = `${timerComponent.timer.toString()}`;
-        // timerComponent.timer.stop();
-
-        switch (timerComponent.kind) {
-            case 'work':
-                timerComponent.emitter.emit(Messages.TimerElapsed);
-                break;
-            case 'break':
-                timerComponent.emitter.emit(Messages.BreakTimerElapsed);
-                break;
-        }
+    private createPauseStatusAction = (): StatusBarItem => ({
+        ...this.timerComponent.statusBarAction,
+        command: CommandMappingsEnum.PauseTimer,
+        text: '$(triangle-right)',
+        tooltip: 'Pause timer'
     });
-};
+
+    private createResumeStatusAction = (): StatusBarItem => ({
+        ...this.timerComponent.statusBarAction,
+        command: CommandMappingsEnum.PauseTimer,
+        text: '$(triangle-right)',
+        tooltip: 'Pause timer'
+    });
+
+    private hookUpEvents() {
+        this.timerComponent.timer.onIntervalElapsing((_: number) => {
+            this.timerComponent.statusBarAction.text = '$(primitive-square)';
+            this.timerComponent.statusBarClock.text = this.timerComponent.timer.toString();
+            this.timerComponent.emitter.emit(Messages.TimerElapsing);
+        });
+
+        this.timerComponent.timer.onIntervalElapsed(() => {
+            this.timerComponent.statusBarAction.command = CommandMappingsEnum.RestartTimer;
+
+            this.timerComponent.statusBarAction.text = '$(sync)';
+            this.timerComponent.statusBarAction.tooltip = 'Restart timer';
+            this.timerComponent.statusBarClock.text = this.timerComponent.timer.toString();
+            this.timerComponent.timer.stop();
+            this.timerComponent.emitter.emit(Messages.TimerElapsed);
+        });
+    }
+}

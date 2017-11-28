@@ -4,6 +4,6 @@ export enum Messages {
     UpdatePomodoriCounter = 'update-pomodori-counter',
     TimerElapsed = 'timer-elapsed',
     TimerElapsing = 'timer-elapsing',
-    BreakTimerElapsed = 'break-timer-elapsed',
-    BreakTimerElapsing = 'break-timer-elapsed'
+    // BreakTimerElapsed = 'break-timer-elapsed',
+    // BreakTimerElapsing = 'break-timer-elapsed'
 }

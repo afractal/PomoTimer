@@ -11,21 +11,21 @@ let taskboardComponent = new TaskboardComponent(createTaskboard());
 
 
 const registerTimerElapsed = () => {
-    workTimerComponent.onTimerElapsed(() => {
+    workTimerComponent.dispatchTimerElapsed(() => {
         window.showInformationMessage('Time for a break');
         currentTaskComponent.incrementPomodoriCounter();
-        workTimerComponent.hideTimer();
-        workTimerComponent.destroyTimer();
-        workTimerComponent.displayTimer();
+        // workTimerComponent.hideTimer();
+        // workTimerComponent.destroyTimer();
+        // workTimerComponent.displayTimer();
     });
 };
 
 const registerBreakTimerElapsed = () => {
-    workTimerComponent.onTimerElapsed(() => {
-        window.showInformationMessage('Time to work');
-        workTimerComponent.destroyTimer();
-        workTimerComponent.hideTimer();
-        workTimerComponent.displayTimer();
+    workTimerComponent.dispatchTimerElapsed(() => {
+        // window.showInformationMessage('Time to work');
+        // workTimerComponent.destroyTimer();
+        // workTimerComponent.hideTimer();
+        // workTimerComponent.displayTimer();
     });
 };
 
@@ -80,6 +80,7 @@ const resumeTimerCommand = commands.registerCommand('pomotimer.resumeTimer', () 
 
 const restartTimerCommand = commands.registerCommand('pomotimer.restartTimer', () => {
     workTimerComponent.restartTimer();
+    // workTimerComponent.startTimer();
 });
 
 const hideTimerCommand = commands.registerCommand('pomotimer.hideTimer', () => {

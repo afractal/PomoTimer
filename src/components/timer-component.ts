@@ -63,7 +63,7 @@ export class TimerComponent {
 
         this.timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
         this.hookUpEvents();
-        this.setStartStatusAction();
+        this.setRestartStatusAction();
         this.refreshStatusClock();
     }
 
@@ -87,6 +87,12 @@ export class TimerComponent {
         this.timerComponent.statusBarAction.tooltip = 'Start timer';
     }
 
+    private setRestartStatusAction() {
+        this.timerComponent.statusBarAction.command = 'pomotimer.startTimer';
+        this.timerComponent.statusBarAction.text = '$(sync)';
+        this.timerComponent.statusBarAction.tooltip = 'Restart timer';
+    }
+
     private setStartStatusAction() {
         this.timerComponent.statusBarAction.command = 'pomotimer.pauseTimer';
         this.timerComponent.statusBarAction.text = '$(triangle-right)';
@@ -105,18 +111,17 @@ export class TimerComponent {
         this.timerComponent.statusBarAction.tooltip = 'Pause timer';
     }
 
+
+
     private hookUpEvents() {
         this.timerComponent.timer.onIntervalElapsing((_: number) => {
             this.timerComponent.statusBarAction.text = '$(primitive-square)';
             this.refreshStatusClock();
-            this.timerComponent.emitter.emit(Messages.TimerElapsing);
+            // this.timerComponent.emitter.emit(Messages.TimerElapsing);
         });
 
         this.timerComponent.timer.onIntervalElapsed(() => {
-            this.timerComponent.statusBarAction.command = 'pomotimer.restartTimer';
-
-            this.timerComponent.statusBarAction.text = '$(sync)';
-            this.timerComponent.statusBarAction.tooltip = 'Restart timer';
+            this.setRestartStatusAction();
             this.refreshStatusClock();
             this.timerComponent.timer.stop();
             this.timerComponent.emitter.emit(Messages.TimerElapsed);

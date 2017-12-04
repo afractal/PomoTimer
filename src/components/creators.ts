@@ -9,7 +9,6 @@ import { Taskboard } from "../types/taskboard";
 export const createWorkTimer = (): WorkTimer => ({
     kind: 'work',
     isRunning: false,
-    // isShown: false,
     timer: new Timer(pomodoroSizeInMinutes * 60),
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3),
@@ -19,7 +18,6 @@ export const createWorkTimer = (): WorkTimer => ({
 export const createBreakTimer = (): BreakTimer => ({
     kind: 'break',
     isRunning: false,
-    // isShown: false,
     timer: new Timer(breakSizeInMinutes * 60),
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3),

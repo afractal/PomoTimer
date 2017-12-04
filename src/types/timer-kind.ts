@@ -7,10 +7,8 @@ type BaseTimer = {
     statusBarAction: StatusBarItem;
     timer: Timer;
     isRunning: boolean;
-    // isShown: boolean;
     emitter: EventEmitter;
 };
-
 
 export type WorkTimer = BaseTimer & { kind: 'work' };
 

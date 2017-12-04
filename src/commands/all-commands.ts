@@ -2,13 +2,11 @@ import { createWorkTimer, createCurrentTask, createTaskboard } from "../componen
 import { TimerComponent } from "../components/timer-component";
 import { CurrentTaskComponent } from "../components/current-task-component";
 import { TaskboardComponent } from "../components/taskboard-component";
-import { commands, window, ExtensionContext } from "vscode";
-
+import { commands, window, ExtensionContext } from 'vscode';
 
 let workTimerComponent = new TimerComponent(createWorkTimer());
 let currentTaskComponent = new CurrentTaskComponent(createCurrentTask());
 let taskboardComponent = new TaskboardComponent(createTaskboard());
-
 
 const registerTimerElapsed = () => {
     workTimerComponent.dispatchTimerElapsed(() => {

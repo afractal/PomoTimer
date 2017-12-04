@@ -4,13 +4,7 @@ import { Messages } from '../types/messages';
 import { TimerKind, WorkTimer } from '../types/timer-kind';
 import { pomodoroSizeInMinutes, breakSizeInMinutes } from '../services/configuration-service';
 import { StatusBarItem, ParameterInformation } from 'vscode';
-
-/*
-    initial state -> can only start
-    running state -> can pause and restart
-    paused state -> can start and restart
-    type TM = UnstartedTimer | RunningTimer | PausedTimer | ElapsedTimer;
-*/
+import { TimerState } from './new-timer-beta';
 
 type ListerDelegate = () => void;
 
@@ -21,21 +15,31 @@ type ListerDelegate = () => void;
 export class TimerComponent {
     constructor(timerComponent: WorkTimer) {
         this.timerComponent = timerComponent;
+        this.isShown = false;
     }
 
+    private timerState: TimerState;
+    // private TimerState: ITimerState;
+
+    private isShown: boolean;
     private timerComponent: WorkTimer;
 
-    dispatchTimerElapsed = (listener: ListerDelegate) => {
+    dispatchTimerElapsed(listener: ListerDelegate) {
         this.timerComponent.emitter.on(Messages.TimerElapsed, listener);
-    };
+    }
 
     displayTimer() {
+        // this.TimerState = this.TimerState.displayTimer();
+
+        if (this.isShown) return;
+
         this.setDisplayStatusAction();
         this.refreshStatusClock();
 
-        this.hookUpEvents();
+        this.hookUpIntervalEvents();
         this.timerComponent.statusBarClock.show();
         this.timerComponent.statusBarAction.show();
+        this.isShown = true;
     }
 
     startTimer() {
@@ -62,14 +66,15 @@ export class TimerComponent {
         // this.timerComponent.isRunning = false;
 
         this.timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
-        this.hookUpEvents();
-        this.setRestartStatusAction();
+        this.hookUpIntervalEvents();
+        this.setDisplayStatusAction();
         this.refreshStatusClock();
     }
 
     hideTimer() {
         this.timerComponent.statusBarAction.hide();
         this.timerComponent.statusBarClock.hide();
+        this.isShown = false;
     }
 
     destroyTimer() {
@@ -88,7 +93,7 @@ export class TimerComponent {
     }
 
     private setRestartStatusAction() {
-        this.timerComponent.statusBarAction.command = 'pomotimer.startTimer';
+        this.timerComponent.statusBarAction.command = 'pomotimer.restartTimer';
         this.timerComponent.statusBarAction.text = '$(sync)';
         this.timerComponent.statusBarAction.tooltip = 'Restart timer';
     }
@@ -111,11 +116,9 @@ export class TimerComponent {
         this.timerComponent.statusBarAction.tooltip = 'Pause timer';
     }
 
-
-
-    private hookUpEvents() {
+    private hookUpIntervalEvents() {
         this.timerComponent.timer.onIntervalElapsing((_: number) => {
-            this.timerComponent.statusBarAction.text = '$(primitive-square)';
+            // this.timerComponent.statusBarAction.text = '$(primitive-square)';
             this.refreshStatusClock();
             // this.timerComponent.emitter.emit(Messages.TimerElapsing);
         });

@@ -80,7 +80,6 @@ export class TimerComponent {
         this.timerComponent.timer = new Timer(pomodoroSizeInMinutes * 60);
     }
 
-
     private refreshStatusClock() {
         this.timerComponent.statusBarClock.text = this.timerComponent.timer.toString();
     }

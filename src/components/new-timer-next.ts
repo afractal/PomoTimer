@@ -1,62 +1,146 @@
-// import { WorkTimer } from "../types/timer-kind";
+import { WorkTimer } from "../types/timer-kind";
+import { Messages } from "../types/messages";
+import { Timer } from "sharp-timer";
+import { pomodoroSizeInMinutes } from "../services/configuration-service";
+
+interface ITimerState {
+    displayTimer: () => ITimerState;
+    startTimer: () => ITimerState;
+    pauseTimer: () => ITimerState;
+    resumeTimer: () => ITimerState;
+    restartTimer: () => ITimerState;
+    hideTimer: () => ITimerState;
+};
 
 
-// export interface ITimerState {
-//     displayTimer: () => ITimerState;
-//     startTimer: () => ITimerState;
-//     pauseTimer: () => ITimerState;
-//     resumeTimer: () => ITimerState;
-//     restartTimer: () => ITimerState;
-//     hideTimer: () => ITimerState;
-// };
+export class UnDisplayed implements ITimerState {
+    constructor(timerObj: WorkTimer) {
+        this.timerObj = timerObj;
+        this.timerObj.timer.onIntervalElapsing((_: number) => {
+            this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
+            // this.timerComponent.emitter.emit(Messages.TimerElapsing);
+        });
+
+        this.timerObj.timer.onIntervalElapsed(() => {
+            this.timerObj.statusBarAction.command = 'pomotimer.restartTimer';
+            this.timerObj.statusBarAction.text = '$(sync)';
+            this.timerObj.statusBarAction.tooltip = 'Restart timer';
+            this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
+            this.timerObj.timer.stop();
+            this.timerObj.emitter.emit(Messages.TimerElapsed);
+        });
+    }
+
+    private timerObj: WorkTimer;
+
+    displayTimer() {
+        this.timerObj.statusBarAction.command = 'pomotimer.startTimer';
+        this.timerObj.statusBarAction.text = '$(triangle-right)';
+        this.timerObj.statusBarAction.tooltip = 'Start timer';
+        this.timerObj.statusBarClock.show();
+        this.timerObj.statusBarAction.show()
+        return new UnStartedTimer(this.timerObj);
+    }
+
+    startTimer: () => this;
+    pauseTimer: () => this;
+    resumeTimer: () => this;
+    restartTimer: () => this;
+    hideTimer: () => this;
+}
+
+export class UnStartedTimer implements ITimerState {
+    constructor(timerObj: WorkTimer) {
+        this.timerObj = timerObj;
+    }
+
+    private timerObj: WorkTimer;
+
+    startTimer() {
+        this.timerObj.timer.start();
+        this.timerObj.statusBarAction.command = 'pomotimer.pauseTimer';
+        this.timerObj.statusBarAction.text = '$(triangle-right)';
+        this.timerObj.statusBarAction.tooltip = 'Pause timer';
+        return new RunningTimer(this.timerObj);
+    }
+
+    displayTimer: () => this;
+    pauseTimer: () => this;
+    resumeTimer: () => this;
+    restartTimer: () => this;
+    hideTimer: () => this;
+}
+
+export class RunningTimer implements ITimerState {
+    constructor(timerObj: WorkTimer) {
+        this.timerObj = timerObj;
+    }
+
+    private timerObj: WorkTimer;
+
+    pauseTimer() {
+        this.timerObj.timer.pause();
+        this.timerObj.statusBarAction.command = 'pomotimer.resumeTimer';
+        this.timerObj.statusBarAction.text = '$(triangle-right)';
+        this.timerObj.statusBarAction.tooltip = 'Resume timer';
+        this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
+        return new PausedTimer(this.timerObj);
+    }
+
+    displayTimer: () => this;
+    startTimer: () => this;
+    resumeTimer: () => this;
+    restartTimer: () => this;
+    hideTimer: () => this;
+}
 
 
-// export class UnstartedTimer implements ITimerState {
-//     constructor(
-//         timerObj: WorkTimer,
-//         onIntervalElapsing: Function,
-//         onIntervalElapsed: Function) {
-//         this.timerObj = timerObj;
-//         this.onIntervalElapsing = onIntervalElapsing;
-//         this.onIntervalElapsed = onIntervalElapsed;
-//     }
+export class PausedTimer implements ITimerState {
+    constructor(timerObj: WorkTimer) {
+        this.timerObj = timerObj;
+    }
 
-//     private timerObj: WorkTimer;
-//     private onIntervalElapsing: Function;
-//     private onIntervalElapsed: Function;
+    private timerObj: WorkTimer;
 
-//     displayTimer() {
-//         this.setDisplayStatusAction();
-//         this.timerObj.statusBarClock.show();
-//         this.timerObj.statusBarAction.show()
-//         return this;
-//     }
+    resumeTimer() {
+        this.timerObj.timer.resume();
+        this.timerObj.statusBarAction.command = 'pomotimer.pauseTimer';
+        this.timerObj.statusBarAction.text = '$(triangle-right)';
+        this.timerObj.statusBarAction.tooltip = 'Pause timer';
+        return new RunningTimer(this.timerObj);
+    }
 
-//     startTimer() {
-//         return this;
-//     }
+    displayTimer: () => this;
+    startTimer: () => this;
+    pauseTimer: () => this;
+    restartTimer: () => this;
+    hideTimer: () => this;
+}
 
-//     pauseTimer: () => this;
 
-//     resumeTimer: () => this;
+export class ElapsedTimer implements ITimerState {
+    constructor(timerObj: WorkTimer) {
+        this.timerObj = timerObj;
+    }
 
-//     restartTimer: () => this;
+    private timerObj: WorkTimer;
 
-//     hideTimer: () => this;
+    restartTimer() {
+        this.timerObj.timer.stop();
+        this.timerObj.timer = new Timer(pomodoroSizeInMinutes * 60);
+        this.timerObj.statusBarAction.command = 'pomotimer.startTimer';
+        this.timerObj.statusBarAction.text = '$(triangle-right)';
+        this.timerObj.statusBarAction.tooltip = 'Start timer';
+        this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
+        return new UnStartedTimer(this.timerObj);
+    }
 
-//     private setDisplayStatusAction() {
-//         this.timerObj.statusBarAction.command = 'pomotimer.startTimer';
-//         this.timerObj.statusBarAction.text = '$(triangle-right)';
-//         this.timerObj.statusBarAction.tooltip = 'Start timer';
-//     }
+    displayTimer: () => this;
+    startTimer: () => this;
+    pauseTimer: () => this;
+    resumeTimer: () => this;
+    hideTimer: () => this;
+}
 
-//     private refreshStatusClock() {
-//         this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
-//     }
 
-//     private hookUpIntervalEvents() {
-//         this.timerObj.timer.onIntervalElapsing = this.onIntervalElapsing;
-//         this.timerObj.timer.onIntervalElapsed = this.onIntervalElapsed;
-//     }
-// }
-
+// export class RestartedTimer { }

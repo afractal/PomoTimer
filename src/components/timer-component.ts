@@ -4,7 +4,6 @@ import { Messages } from '../types/messages';
 import { TimerKind, WorkTimer } from '../types/timer-kind';
 import { pomodoroSizeInMinutes, breakSizeInMinutes } from '../services/configuration-service';
 import { StatusBarItem, ParameterInformation } from 'vscode';
-import { TimerState } from './new-timer-beta';
 
 type ListerDelegate = () => void;
 
@@ -18,7 +17,7 @@ export class TimerComponent {
         this.isShown = false;
     }
 
-    private timerState: TimerState;
+    // private timerState: TimerState;
     // private TimerState: ITimerState;
 
     private isShown: boolean;

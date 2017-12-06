@@ -3,22 +3,23 @@ import { TimerComponent } from "../components/timer-component";
 import { CurrentTaskComponent } from "../components/current-task-component";
 import { TaskboardComponent } from "../components/taskboard-component";
 import { commands, window, ExtensionContext } from 'vscode';
+import { MessagingCenter } from "../services/messaging-center";
 
 let workTimerComponent = new TimerComponent(createWorkTimer());
 let currentTaskComponent = new CurrentTaskComponent(createCurrentTask());
 let taskboardComponent = new TaskboardComponent(createTaskboard());
 
 const registerTimerElapsed = () => {
-    workTimerComponent.dispatchTimerElapsed(() => {
+    MessagingCenter.subscribe('timer-elapsed', () => {
         window.showInformationMessage('Time for a break');
         currentTaskComponent.incrementPomodoriCounter();
         workTimerComponent.restartTimer();
-    });
+    })
 };
 
 const registerBreakTimerElapsed = () => {
-    workTimerComponent.dispatchTimerElapsed(() => {
-    });
+    // workTimerComponent.dispatchTimerElapsed(() => {
+    // });
 };
 
 const registerTaskAttached = () => {

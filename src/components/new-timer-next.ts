@@ -1,8 +1,8 @@
 import { WorkTimer } from "../types/timer-kind";
 import { Messages } from "../types/messages";
 import { Timer } from "sharp-timer";
-import { pomodoroSizeInMinutes } from "../services/configuration-service";
 import { MessagingCenter } from "../services/messaging-center";
+import { getPomodoroSizeInMinutes } from "../services/configuration-service";
 
 export interface ITimerState {
     displayTimer: () => ITimerState;
@@ -14,6 +14,7 @@ export interface ITimerState {
 };
 
 
+// UnDisplayed
 export class UnDisplayed implements ITimerState {
     constructor(timerObj: WorkTimer) {
         this.timerObj = timerObj;
@@ -58,6 +59,7 @@ export class UnDisplayed implements ITimerState {
     }
 }
 
+// UnStartedTimer
 export class UnStartedTimer implements ITimerState {
     constructor(timerObj: WorkTimer) {
         this.timerObj = timerObj;
@@ -85,6 +87,7 @@ export class UnStartedTimer implements ITimerState {
     }
 }
 
+// RunningTimer
 export class RunningTimer implements ITimerState {
     constructor(timerObj: WorkTimer) {
         this.timerObj = timerObj;
@@ -115,6 +118,7 @@ export class RunningTimer implements ITimerState {
     }
 }
 
+// PausedTimer
 export class PausedTimer implements ITimerState {
     constructor(timerObj: WorkTimer) {
         this.timerObj = timerObj;
@@ -144,6 +148,7 @@ export class PausedTimer implements ITimerState {
     }
 }
 
+// ElapsedTimer
 export class ElapsedTimer implements ITimerState {
     constructor(timerObj: WorkTimer) {
         this.timerObj = timerObj;
@@ -154,7 +159,7 @@ export class ElapsedTimer implements ITimerState {
     restartTimer() {
         this.timerObj.timer.stop();
 
-        this.timerObj.timer = new Timer(pomodoroSizeInMinutes * 60);
+        this.timerObj.timer = new Timer(getPomodoroSizeInMinutes() * 60);
         this.timerObj.timer.onIntervalElapsing((_: number) => {
             this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
         });

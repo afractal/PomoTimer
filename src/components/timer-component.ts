@@ -1,9 +1,4 @@
-import { Timer } from 'sharp-timer';
-import { CommandMappingsEnum } from '../types/command-mappings';
-import { Messages } from '../types/messages';
-import { TimerKind, WorkTimer } from '../types/timer-kind';
-import { pomodoroSizeInMinutes, breakSizeInMinutes } from '../services/configuration-service';
-import { StatusBarItem, ParameterInformation } from 'vscode';
+import { WorkTimer } from '../types/timer-kind';
 import { ITimerState, UnDisplayed } from './new-timer-next';
 
 type ListerDelegate = () => void;

@@ -2,14 +2,14 @@ import { Timer } from "sharp-timer";
 import { TimerKind, BreakTimer, WorkTimer } from "../types/timer-kind";
 import { StatusBarAlignment, window } from "vscode";
 import { EventEmitter } from "events";
-import { pomodoroSizeInMinutes, breakSizeInMinutes } from "../services/configuration-service";
+import { getPomodoroSizeInMinutes, getBreakSizeInMinutes } from "../services/configuration-service";
 import { CurrentTask } from "../types/current-task";
 import { Taskboard } from "../types/taskboard";
 
 export const createWorkTimer = (): WorkTimer => ({
     kind: 'work',
     isRunning: false,
-    timer: new Timer(pomodoroSizeInMinutes * 60),
+    timer: new Timer(getPomodoroSizeInMinutes() * 60),
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3),
     emitter: new EventEmitter()
@@ -18,7 +18,7 @@ export const createWorkTimer = (): WorkTimer => ({
 export const createBreakTimer = (): BreakTimer => ({
     kind: 'break',
     isRunning: false,
-    timer: new Timer(breakSizeInMinutes * 60),
+    timer: new Timer(getBreakSizeInMinutes() * 60),
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3),
     emitter: new EventEmitter()

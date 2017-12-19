@@ -5,5 +5,4 @@ import { EventEmitter } from "events";
 export type CurrentTask = {
     selectedTask: Task | null;
     statusBarSelectedTask: StatusBarItem;
-    emitter: EventEmitter;
 };

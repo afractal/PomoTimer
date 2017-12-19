@@ -5,6 +5,7 @@ import { Task } from '../types/task';
 import { Messages } from '../types/messages';
 import { CommandMappingsEnum } from '../types/command-mappings';
 import { CurrentTask } from '../types/current-task';
+import { MessagingCenter } from '../services/messaging-center';
 
 type ListenerDelegate = (pomodoroCounter: number) => void;
 
@@ -17,10 +18,6 @@ export class CurrentTaskComponent {
 
     hasTaskAssigned = () => {
         return this.currentTask.selectedTask != null;
-    };
-
-    onPomodoroCounterUpdated = (listener: ListenerDelegate) => {
-        this.currentTask.emitter.on(Messages.UpdatePomodoriCounter, listener);
     };
 
     displayCurrentTask = () => {
@@ -38,7 +35,8 @@ export class CurrentTaskComponent {
 
         this.currentTask.selectedTask.completedPomodori += 1;
         this.currentTask.statusBarSelectedTask.text = this.getPomodoroStats(this.currentTask.selectedTask);
-        this.currentTask.emitter.emit(Messages.UpdatePomodoriCounter, this.currentTask.selectedTask.completedPomodori);
+
+        MessagingCenter.publish(Messages.UpdatePomodoriCounter, this.currentTask.selectedTask.completedPomodori);
     };
 
     updatePomodoroCounter = async (pomodoroCounter: number) => {
@@ -66,7 +64,7 @@ export class CurrentTaskComponent {
         return false;
     };
 
-    getPomodoroStats = (task: Task) => {
+    private getPomodoroStats = (task: Task) => {
         return `${task.name} - ${task.completedPomodori}/${task.estimatedPomodori}`;
     };
 }

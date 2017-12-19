@@ -1,27 +1,27 @@
 export enum CommandMappingsEnum {
     DisplayTimer = 'pomotimer.displayTimer',
-    // StartTimer = 'pomotimer.startTimer',
-    // StartBreakTimer = 'pomotimer.startBreakTimer',
     PauseTimer = 'pomotimer.pauseTimer',
-    // PauseBreakTimer = 'pomotimer.pauseBreakTimer',
     ResumeTimer = 'pomotimer.resumeTimer',
     RestartTimer = 'pomotimer.restartTimer',
-    // RestartBreakTimer = 'pomotimer.restartBreakTimer',
     HideTimer = 'pomotimer.hideTimer',
     DisplayTaskboard = 'pomotimer.displayTaskboard'
+    // StartTimer = 'pomotimer.startTimer',
+    // StartBreakTimer = 'pomotimer.startBreakTimer',
+    // PauseBreakTimer = 'pomotimer.pauseBreakTimer',
+    // RestartBreakTimer = 'pomotimer.restartBreakTimer',
 };
 
 type CommandCallback = (...args: any[]) => any;
 
 export type CommandMappings = {
-    'pomotimer.displayTimer': CommandCallback,
-    'pomotimer.startTimer': CommandCallback,
-    // 'pomotimer.startBreakTimer': CommandCallback,
-    'pomotimer.pauseTimer': CommandCallback,
-    // 'pomotimer.pauseBreakTimer': CommandCallback,
-    'pomotimer.resumeTimer': CommandCallback,
-    'pomotimer.restartTimer': CommandCallback,
-    // 'pomotimer.restartBreakTimer': CommandCallback,
-    'pomotimer.hideTimer': CommandCallback,
+    'pomotimer.displayTimer': CommandCallback
+    'pomotimer.startTimer': CommandCallback
+    'pomotimer.pauseTimer': CommandCallback
+    'pomotimer.resumeTimer': CommandCallback
+    'pomotimer.restartTimer': CommandCallback
+    'pomotimer.hideTimer': CommandCallback
     'pomotimer.displayTaskboard': CommandCallback
+    // 'pomotimer.startBreakTimer': CommandCallback,
+    // 'pomotimer.pauseBreakTimer': CommandCallback,
+    // 'pomotimer.restartBreakTimer': CommandCallback,
 };

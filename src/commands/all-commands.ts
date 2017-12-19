@@ -1,55 +1,45 @@
 import { createWorkTimer, createCurrentTask, createTaskboard } from "../components/creators";
-import { TimerComponent } from "../components/timer-component";
+import { TimerComponent, VisibleTimerDecorator, ITimerComponent, HiddenTimerDecorator } from "../components/timer-component";
 import { CurrentTaskComponent } from "../components/current-task-component";
 import { TaskboardComponent } from "../components/taskboard-component";
 import { commands, window, ExtensionContext } from 'vscode';
 import { MessagingCenter } from "../services/messaging-center";
+import { Messages } from "../types/messages";
 
-let workTimerComponent = new TimerComponent(createWorkTimer());
-let currentTaskComponent = new CurrentTaskComponent(createCurrentTask());
-let taskboardComponent = new TaskboardComponent(createTaskboard());
+let workTimerComponent: ITimerComponent =
+    new TimerComponent(createWorkTimer())
 
-const registerTimerElapsed = () => {
-    MessagingCenter.subscribe('timer-elapsed', () => {
-        window.showInformationMessage('Time for a break');
-        currentTaskComponent.incrementPomodoriCounter();
+let currentTaskComponent =
+    new CurrentTaskComponent(createCurrentTask());
+
+let taskboardComponent =
+    new TaskboardComponent(createTaskboard());
+
+
+MessagingCenter.subscribe(Messages.TimerElapsed, () => {
+    window.showInformationMessage('Time for a break');
+    currentTaskComponent.incrementPomodoriCounter();
+    workTimerComponent.restartTimer();
+})
+
+MessagingCenter.subscribe(Messages.AttachTask, selectedTask => {
+    currentTaskComponent.setCurrentWorkingTask(selectedTask);
+    currentTaskComponent.displayCurrentTask();
+    // workTimerComponent.displayTimer();
+});
+
+MessagingCenter.subscribe(Messages.DetachTask, selectedTask => {
+    const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTask);
+    if (wasRemoved) {
         workTimerComponent.restartTimer();
-    })
-};
+    }
+});
 
-const registerBreakTimerElapsed = () => {
-    // workTimerComponent.dispatchTimerElapsed(() => {
-    // });
-};
+MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodori) => {
+    await currentTaskComponent.updatePomodoroCounter(completedPomodori);
+});
 
-const registerTaskAttached = () => {
-    taskboardComponent.onTaskAttached(selectedTask => {
-        currentTaskComponent.setCurrentWorkingTask(selectedTask);
-        currentTaskComponent.displayCurrentTask();
-        workTimerComponent.displayTimer();
-    });
-};
-
-const registerTaskDetached = () => {
-    taskboardComponent.onTaskDetached(selectedTask => {
-        const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTask);
-        if (wasRemoved) {
-            workTimerComponent.restartTimer();
-        }
-    });
-};
-
-const registerTaskCounterUpdated = () => {
-    currentTaskComponent.onPomodoroCounterUpdated(async (completedPomodori) => {
-        await currentTaskComponent.updatePomodoroCounter(completedPomodori);
-    });
-};
-
-registerTimerElapsed();
-registerBreakTimerElapsed();
-registerTaskAttached();
-registerTaskDetached();
-registerTaskCounterUpdated();
+// ===================================================================================
 
 const displayTimerCommand = commands.registerCommand('pomotimer.displayTimer', () => {
     workTimerComponent.displayTimer();
@@ -58,7 +48,7 @@ const displayTimerCommand = commands.registerCommand('pomotimer.displayTimer', (
 
 const startTimerCommand = commands.registerCommand('pomotimer.startTimer', async () => {
     if (!currentTaskComponent.hasTaskAssigned())
-        await taskboardComponent.showTaskboardAsync();
+        await taskboardComponent.showTaskboard();
     else
         workTimerComponent.startTimer();
 });
@@ -76,12 +66,12 @@ const restartTimerCommand = commands.registerCommand('pomotimer.restartTimer', (
 });
 
 const hideTimerCommand = commands.registerCommand('pomotimer.hideTimer', () => {
-    workTimerComponent.hideTimer();
+    workTimerComponent = workTimerComponent.hideTimer()
     currentTaskComponent.hideCurrentTask();
 });
 
 const displayTaskboardCommand = commands.registerCommand('pomotimer.displayTaskboard', async () => {
-    await taskboardComponent.showTaskboardAsync();
+    await taskboardComponent.showTaskboard();
 });
 
 export const registerAllCommands = (context: ExtensionContext) => {

@@ -7,6 +7,7 @@ import { TaskPick } from '../types/task-pick';
 import { Pick } from '../types/pick-interface';
 import { CurrentTask } from '../types/current-task';
 import { Taskboard } from '../types/taskboard';
+import { MessagingCenter } from '../services/messaging-center';
 
 type ListenerDelegate = (taskPick: Task) => void;
 
@@ -18,15 +19,8 @@ export class TaskboardComponent {
 
     private taskboard: Taskboard;
 
-    onTaskAttached = (listener: ListenerDelegate) => {
-        this.taskboard.emitter.on(Messages.AttachTask, listener);
-    };
 
-    onTaskDetached = (listener: ListenerDelegate) => {
-        this.taskboard.emitter.on(Messages.DetachTask, listener);
-    };
-
-    showTaskboardAsync = async () => {
+    showTaskboard = async () => {
         const choosePick: Pick = { kind: 'choose', label: 'Choose task from board', description: '' };
         const addPick: Pick = { kind: 'add', label: 'Add new task to board', description: '' };
         const removePick: Pick = { kind: 'remove', label: 'Remove task from board', description: '' };
@@ -46,7 +40,7 @@ export class TaskboardComponent {
 
         if (!taskPick) return;
 
-        this.taskboard.emitter.emit(Messages.AttachTask, taskPick.task);
+        MessagingCenter.publish(Messages.AttachTask, taskPick.task);
     };
 
     private showAddPickerAsync = async () => {
@@ -69,7 +63,7 @@ export class TaskboardComponent {
         };
 
         await insertNewAsync(task);
-        await this.showTaskboardAsync();
+        await this.showTaskboard();
     };
 
     private showRemovePickerAsync = async () => {
@@ -79,10 +73,10 @@ export class TaskboardComponent {
 
         if (!taskPick) return;
 
-        this.taskboard.emitter.emit(Messages.DetachTask, taskPick);
+        MessagingCenter.publish(Messages.DetachTask, taskPick);
 
         await removeAsync(taskPick.task);
-        await this.showTaskboardAsync();
+        await this.showTaskboard();
     };
 
     private showMarkPickerAsync = async () => { };

@@ -2,9 +2,15 @@ import { WorkTimer } from "../types/timer-kind";
 import { Messages } from "../types/messages";
 import { Timer } from "sharp-timer";
 import { MessagingCenter } from "../services/messaging-center";
-import { StatusBarItem } from "vscode";
+import { StatusBarItem } from 'vscode';
 
-//  Unstarted -> Running
+// Timer States: Unstarted, Running, Paused, Elapsed
+/*
+    States Actions:
+    Unstarted: start
+    Running: pause
+    Elapsed: restart
+*/
 
 export interface ITimerState {
     display: () => ITimerState;
@@ -33,22 +39,22 @@ const registerTimerEvents = (timerObj: WorkTimer) => {
 
         MessagingCenter.publish(Messages.TimerElapsed, null);
     });
-
 };
 
 
 // UnStartedTimer
 export class UnStartedTimer implements ITimerState {
-    constructor(private timerObj: WorkTimer) { }
-
-    display() {
+    constructor(private timerObj: WorkTimer) {
         registerTimerEvents(this.timerObj);
 
         this.timerObj.statusBarAction.command = 'pomotimer.startTimer';
         this.timerObj.statusBarAction.text = '$(triangle-right)';
         this.timerObj.statusBarAction.tooltip = 'Start timer';
-        this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
 
+        this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
+    }
+
+    display() {
         this.timerObj.statusBarAction.show()
         this.timerObj.statusBarClock.show();
 
@@ -94,11 +100,12 @@ export class RunningTimer implements ITimerState {
 
     display() {
         console.log('display for running timer');
-        // this.timerObj.statusBarAction.show();
-        // this.timerObj.statusBarClock.show();
+        this.timerObj.statusBarAction.show()
+        this.timerObj.statusBarClock.show();
 
         return this;
-    };
+    }
+
     start: () => this;
     resume: () => this;
     restart: () => this;
@@ -125,7 +132,13 @@ export class PausedTimer implements ITimerState {
         return new RunningTimer(this.timerObj);
     }
 
-    display: () => this;
+    display() {
+        this.timerObj.statusBarAction.show();
+        this.timerObj.statusBarClock.show();
+
+        return new RunningTimer(this.timerObj);
+    }
+
     start: () => this;
     pause: () => this;
     restart: () => this;
@@ -151,22 +164,17 @@ export class ElapsedTimer implements ITimerState {
 
         this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
 
-        // this.timerObj.statusBarAction =
-        //     new StatusBarItemBuilder(this.timerObj.statusBarAction)
-        //         .withCommand('pomotimer.startTimer')
-        //         .withText('$(triangle-right)')
-        //         .withTooltip('Start timer')
-        //         .build();
-
-        // this.timerObj.statusBarClock =
-        //     new StatusBarItemBuilder(this.timerObj.statusBarClock)
-        //         .withText(this.timerObj.timer.toString())
-        //         .build();
-
         return new UnStartedTimer(this.timerObj);
     }
 
-    display: () => this;
+    display() {
+        this.timerObj.statusBarAction.show();
+        this.timerObj.statusBarClock.show();
+
+        return new RunningTimer(this.timerObj);
+    }
+
+
     start: () => this;
     pause: () => this;
     resume: () => this;
@@ -200,4 +208,3 @@ class StatusBarItemBuilder {
         return this.statusBarItem;
     }
 }
-

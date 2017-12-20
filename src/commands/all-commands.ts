@@ -1,5 +1,5 @@
 import { createWorkTimer, createCurrentTask, createTaskboard } from "../components/creators";
-import { TimerComponent, VisibleTimerDecorator, ITimerComponent, HiddenTimerDecorator } from "../components/timer-component";
+import { TimerComponent, ITimerComponent } from "../components/timer-component";
 import { CurrentTaskComponent } from "../components/current-task-component";
 import { TaskboardComponent } from "../components/taskboard-component";
 import { commands, window, ExtensionContext } from 'vscode';
@@ -66,7 +66,7 @@ const restartTimerCommand = commands.registerCommand('pomotimer.restartTimer', (
 });
 
 const hideTimerCommand = commands.registerCommand('pomotimer.hideTimer', () => {
-    workTimerComponent = workTimerComponent.hideTimer()
+    workTimerComponent.hideTimer()
     currentTaskComponent.hideCurrentTask();
 });
 

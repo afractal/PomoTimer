@@ -1,5 +1,7 @@
 import { WorkTimer } from '../types/timer-kind';
 import { ITimerState, UnStartedTimer } from './new-timer-oop';
+import { VisibleTimerDecorator } from './timer-decorators/visible-timer-component';
+import { HiddenTimerDecorator } from './timer-decorators/hidden-timer-component';
 
 export interface ITimerComponent {
     startTimer: () => ITimerComponent
@@ -45,70 +47,6 @@ export class TimerComponent implements ITimerComponent {
 
     restartTimer() {
         this.timerState = this.timerState.restart();
-        return this;
-    }
-}
-
-// visible timer
-export class VisibleTimerDecorator implements ITimerComponent {
-    constructor(private timerComponent: ITimerComponent) { }
-
-    displayTimer() {
-        return this;
-    }
-
-    hideTimer() {
-        return this;
-    }
-
-    startTimer() {
-        this.timerComponent.startTimer();
-        return this;
-    }
-
-    pauseTimer() {
-        this.timerComponent.pauseTimer();
-        return this;
-    }
-
-    resumeTimer() {
-        this.timerComponent.resumeTimer();
-        return this;
-    }
-
-    restartTimer() {
-        this.timerComponent.restartTimer();
-        return this;
-    }
-}
-
-
-//hidden timer
-export class HiddenTimerDecorator implements ITimerComponent {
-    constructor(private timerComponent: ITimerComponent) { }
-
-    displayTimer() {
-        this.timerComponent.displayTimer();
-        return this;
-    }
-
-    hideTimer() {
-        return this;
-    }
-
-    startTimer() {
-        return this;
-    }
-
-    pauseTimer() {
-        return this;
-    }
-
-    resumeTimer() {
-        return this;
-    }
-
-    restartTimer() {
         return this;
     }
 }

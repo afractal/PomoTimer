@@ -1,10 +1,13 @@
 import { createWorkTimer, createCurrentTask, createTaskboard } from "../components/creators";
-import { TimerComponent, ITimerComponent } from "../components/timer-component";
-import { CurrentTaskComponent } from "../components/current-task-component";
-import { TaskboardComponent } from "../components/taskboard-component";
+import { TimerComponent, ITimerComponent } from "../components/timer";
+import { CurrentTaskComponent } from "../components/current-task";
+import { TaskboardComponent } from "../components/taskboard";
 import { commands, window, ExtensionContext } from 'vscode';
 import { MessagingCenter } from "../services/messaging-center";
-import { Messages } from "../types/messages";
+import { Messages } from "../types";
+import { RunningTimer } from "../components/timer-states/running-timer";
+import { PausedTimer } from "../components/timer-states/paused-timer";
+import { UnStartedTimer } from "../components/timer-states/unstarted-timer";
 
 let workTimerComponent: ITimerComponent =
     new TimerComponent(createWorkTimer())
@@ -19,13 +22,12 @@ let taskboardComponent =
 MessagingCenter.subscribe(Messages.TimerElapsed, () => {
     window.showInformationMessage('Time for a break');
     currentTaskComponent.incrementPomodoriCounter();
-    workTimerComponent.restartTimer();
+    // workTimerComponent.restartTimer();
 })
 
 MessagingCenter.subscribe(Messages.AttachTask, selectedTask => {
     currentTaskComponent.setCurrentWorkingTask(selectedTask);
-    currentTaskComponent.displayCurrentTask();
-    // workTimerComponent.displayTimer();
+    displayTimerCommandLogic();
 });
 
 MessagingCenter.subscribe(Messages.DetachTask, selectedTask => {
@@ -41,24 +43,65 @@ MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodo
 
 // ===================================================================================
 
-const displayTimerCommand = commands.registerCommand('pomotimer.displayTimer', () => {
+// start & resume should be one command - done
+// display & hide should be one command
+
+
+const displayTimerCommandLogic = () => {
     workTimerComponent.displayTimer();
     currentTaskComponent.displayCurrentTask();
-});
+};
 
-const startTimerCommand = commands.registerCommand('pomotimer.startTimer', async () => {
+const startCommandLogic = async () => {
     if (!currentTaskComponent.hasTaskAssigned())
         await taskboardComponent.showTaskboard();
     else
         workTimerComponent.startTimer();
+};
+
+const pauseCommandLogic = () => {
+    workTimerComponent.pauseTimer();
+};
+
+const resumeCommandLogic = () => {
+    workTimerComponent.resumeTimer();
+};
+
+const startOrResumeCommand = commands.registerCommand('pomotimer.startOrPauseTimer', async () => {
+    displayTimerCommandLogic();
+
+    switch (workTimerComponent.getState()) {
+        case 'paused':
+            resumeCommandLogic();
+            break;
+
+        case 'unstarted':
+            await startCommandLogic();
+            break;
+
+        case 'running':
+            pauseCommandLogic();
+            break;
+
+        default:
+            break;
+    }
+});
+
+const displayTimerCommand = commands.registerCommand('pomotimer.displayTimer', () => {
+    displayTimerCommandLogic();
+});
+
+const startTimerCommand = commands.registerCommand('pomotimer.startTimer', async () => {
+    await startCommandLogic();
 });
 
 const pauseTimerCommand = commands.registerCommand('pomotimer.pauseTimer', () => {
-    workTimerComponent.pauseTimer();
+    pauseCommandLogic();
 });
 
 const resumeTimerCommand = commands.registerCommand('pomotimer.resumeTimer', () => {
-    workTimerComponent.resumeTimer();
+    resumeCommandLogic();
 });
 
 const restartTimerCommand = commands.registerCommand('pomotimer.restartTimer', () => {
@@ -82,6 +125,7 @@ export const registerAllCommands = (context: ExtensionContext) => {
         resumeTimerCommand,
         restartTimerCommand,
         hideTimerCommand,
-        displayTaskboardCommand
+        displayTaskboardCommand,
+        startOrResumeCommand
     );
 };

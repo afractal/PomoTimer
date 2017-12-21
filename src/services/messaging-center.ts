@@ -1,5 +1,13 @@
 
-export type MessageDelegate = (data: any) => void;
+type MessageDelegate = (data: any) => void
+
+type MessageDelegates = Array<MessageDelegate>
+
+const delegateRec = ([head, ...tail]: MessageDelegates, data: any): MessageDelegates => {
+    if (!head) return [];
+    head(data);
+    return delegateRec(tail, data);
+};
 
 export class MessagingCenter {
     private static _cache = new Map<string, Array<MessageDelegate>>();
@@ -14,6 +22,7 @@ export class MessagingCenter {
             delegate(data);
         }
     }
+
 
     static subscribe(id: string, func: MessageDelegate) {
         this.throwIfEmpty(id);

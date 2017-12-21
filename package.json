@@ -33,10 +33,8 @@
         "onCommand:pomotimer.displayTaskboard",
         "onCommand:pomotimer.displayTimer",
         "onCommand:pomotimer.hideTimer",
-        "onCommand:pomotimer.startTimer",
-        "onCommand:pomotimer.pauseTimer",
-        "onCommand:pomotimer.resumeTimer",
-        "onCommand:pomotimer.restartTimer"
+        "onCommand:pomotimer.restartTimer",
+        "onCommand:pomotimer.startOrPauseTimer"
     ],
     "main": "./out/src/extension",
     "contributes": {
@@ -68,20 +66,12 @@
                 "command": "pomotimer.hideTimer"
             },
             {
-                "title": "Start Pomodoro Timer",
-                "command": "pomotimer.startTimer"
-            },
-            {
-                "title": "Pause Pomodoro Timer",
-                "command": "pomotimer.pauseTimer"
-            },
-            {
-                "title": "Resume Pomodoro Timer",
-                "command": "pomotimer.resumeTimer"
-            },
-            {
                 "title": "Restart Pomodoro Timer",
                 "command": "pomotimer.restartTimer"
+            },
+            {
+                "title": "Start/Stop/Resume Pomodoro Timer",
+                "command": "pomotimer.startOrPauseTimer"
             }
         ],
         "keybindings": [
@@ -104,28 +94,16 @@
                 "mac": "cmd+alt+h"
             },
             {
-                "command": "pomotimer.startTimer",
-                "key": "ctrl+alt+s",
-                "win": "ctrl+alt+s",
-                "mac": "cmd+alt+s"
-            },
-            {
-                "command": "pomotimer.pauseTimer",
-                "key": "ctrl+alt+p",
-                "win": "ctrl+alt+p",
-                "mac": "cmd+alt+p"
-            },
-            {
-                "command": "pomotimer.resumeTimer",
-                "key": "ctrl+alt+r",
-                "win": "ctrl+alt+r",
-                "mac": "cmd+alt+r"
-            },
-            {
                 "command": "pomotimer.restartTimer",
                 "key": "ctrl+alt+shift+r",
                 "win": "ctrl+alt+shift+r",
                 "mac": "cmd+alt+shift+r"
+            },
+            {
+                "command": "pomotimer.startOrPauseTimer",
+                "key": "ctrl+alt+s",
+                "win": "ctrl+alt+s",
+                "mac": "cmd+alt+s"
             }
         ]
     },

@@ -1,16 +1,10 @@
 import { window } from 'vscode';
 import { insertNewAsync, removeAsync, getTasks, createStore } from '../services/task-store';
 import { EventEmitter } from 'events';
-import { Messages } from '../types/messages';
-import { Task } from '../types/task';
-import { TaskPick } from '../types/task-pick';
-import { Pick } from '../types/pick-interface';
-import { CurrentTask } from '../types/current-task';
-import { Taskboard } from '../types/taskboard';
 import { MessagingCenter } from '../services/messaging-center';
+import { Task, Taskboard, Messages, TaskPick, PickType } from '../types';
 
 type ListenerDelegate = (taskPick: Task) => void;
-
 
 export class TaskboardComponent {
     constructor(taskboard: Taskboard) {
@@ -21,9 +15,9 @@ export class TaskboardComponent {
 
 
     showTaskboard = async () => {
-        const choosePick: Pick = { kind: 'choose', label: 'Choose task from board', description: '' };
-        const addPick: Pick = { kind: 'add', label: 'Add new task to board', description: '' };
-        const removePick: Pick = { kind: 'remove', label: 'Remove task from board', description: '' };
+        const choosePick: PickType = { kind: 'choose', label: 'Choose task from board', description: '' };
+        const addPick: PickType = { kind: 'add', label: 'Add new task to board', description: '' };
+        const removePick: PickType = { kind: 'remove', label: 'Remove task from board', description: '' };
         // const markPick: Pick = { kind: 'mark', label: 'Mark task as done', description: '' };
 
         const selectedPick = await window.showQuickPick([choosePick, addPick, removePick], {
@@ -81,7 +75,7 @@ export class TaskboardComponent {
 
     private showMarkPickerAsync = async () => { };
 
-    private performActionAsync = async (picker: Pick | undefined) => {
+    private performActionAsync = async (picker: PickType | undefined) => {
         if (!picker) return;
 
         switch (picker.kind) {

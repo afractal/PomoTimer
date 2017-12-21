@@ -1,14 +1,16 @@
 import { workspace } from 'vscode';
 import * as process from 'process';
 
-type Env = 'dev' | 'prod';
+type Env = 'dev' | 'prod'
 
 const config = workspace.getConfiguration('pomotimer');
 const configWorkTime = config.get<number>('workTime');
 const configBreakTime = config.get<number>('breakTime');
 
+const envify = (obj: any) => obj as Env;
+
 const pomoTimerEnv = process.env['POMOTIMER_ENV'];
-const env = !!pomoTimerEnv ? pomoTimerEnv as Env : 'dev';
+const env: Env = !!pomoTimerEnv ? envify(pomoTimerEnv) : envify('dev');
 
 const defaultPomodoroSize = 25;
 const defaultBreakSize = 5;
@@ -24,3 +26,6 @@ export const getBreakSizeInMinutes = () =>
     (env == 'prod') ?
         configBreakTime || defaultBreakSize :
         devBreakSize;
+
+
+

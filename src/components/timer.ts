@@ -1,7 +1,7 @@
-import { WorkTimer } from '../types/timer-kind';
-import { ITimerState, UnStartedTimer } from './new-timer-oop';
-import { VisibleTimerDecorator } from './timer-decorators/visible-timer-component';
-import { HiddenTimerDecorator } from './timer-decorators/hidden-timer-component';
+import { VisibleTimerDecorator } from './timer-decorators/visible-timer';
+import { HiddenTimerDecorator } from './timer-decorators/hidden-timer';
+import { WorkTimer, ITimerState, TimerStates } from '../types';
+import { UnStartedTimer } from './timer-states/unstarted-timer';
 
 export interface ITimerComponent {
     startTimer: () => ITimerComponent
@@ -11,6 +11,8 @@ export interface ITimerComponent {
 
     displayTimer: () => ITimerComponent
     hideTimer: () => ITimerComponent
+
+    getState: () => TimerStates
 }
 
 export class TimerComponent implements ITimerComponent {
@@ -19,6 +21,10 @@ export class TimerComponent implements ITimerComponent {
     }
 
     private timerState: ITimerState;
+
+    getState(): TimerStates {
+        return this.timerState.getState();
+    }
 
     displayTimer(): ITimerComponent {
         this.timerState = this.timerState.display();

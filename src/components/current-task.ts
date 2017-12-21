@@ -1,11 +1,8 @@
 import { window, StatusBarItem, StatusBarAlignment, Memento } from 'vscode';
 import { EventEmitter } from 'events';
 import { updateAsync, createStore } from '../services/task-store';
-import { Task } from '../types/task';
-import { Messages } from '../types/messages';
-import { CommandMappingsEnum } from '../types/command-mappings';
-import { CurrentTask } from '../types/current-task';
 import { MessagingCenter } from '../services/messaging-center';
+import { CurrentTask, Messages, Task, CommandMappingsEnum } from '../types';
 
 type ListenerDelegate = (pomodoroCounter: number) => void;
 

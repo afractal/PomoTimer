@@ -1,10 +1,10 @@
 import { Memento, ExtensionContext } from 'vscode';
-import { Task } from '../types/task';
+import { Task } from '../types';
 
 const mementoKey = 'tasks';
 type TaskStore = {
     readonly memento: Memento;
-};
+}
 
 let taskStore: TaskStore;
 
@@ -55,10 +55,10 @@ export const removeAllAsync = async () => {
 
 
 type ImmutableSet<T> = {
-    add: (item: T) => ImmutableSet<T>;
-    remove: (item: T) => ImmutableSet<T>;
-    items: () => T[];
-};
+    add: (item: T) => ImmutableSet<T>
+    remove: (item: T) => ImmutableSet<T>
+    items: () => T[]
+}
 
 const ImmutableSet = (collection: Task[]): ImmutableSet<Task> => {
     let items = new Array<Task>(...collection);

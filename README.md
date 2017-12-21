@@ -8,6 +8,12 @@
 
 ## Changes
 
+*v.0.3.\**
+
+- display/hide are condensed to one command
+- start/stop/resume are condensed to one command
+- revisit mechanisms
+
 *v.0.2.\**
 
 - add and integrate taskboard with timer
@@ -22,15 +28,14 @@
 
 ## Keybindings
 
-command                | mac             | win
----------------------- | --------------- | ---------------
-Display Taskboard      | cmd+alt+t       | ctrl+alt+t
-Display Pomodoro Timer | cmd+alt+d       | ctrl+alt+d
-Hide Pomodoro Timer    | cmd+alt+h       | ctrl+alt+h
-Start Pomodoro Timer   | cmd+alt+s       | ctrl+alt+s
-Pause Pomodoro Timer   | cmd+alt+p       | ctrl+alt+p
-Resume Pomodoro Timer  | cmd+alt+r       | ctrl+alt+r
-Restart Pomodoro Timer | cmd+alt+shift+r | ctrl+alt+shift+r
+command                             | mac             | win
+----------------------------------- | --------------- | ---------------
+Display Taskboard                   | cmd+alt+t       | ctrl+alt+t
+Display Pomodoro Timer              | cmd+alt+d       | ctrl+alt+d
+Hide Pomodoro Timer                 | cmd+alt+h       | ctrl+alt+h
+Start/Pause/Resume Pomodoro Timer   | cmd+alt+s       | ctrl+alt+s
+Restart Pomodoro Timer              | cmd+alt+shift+r | ctrl+alt+shift+r
+
 
 ## Configuration
 

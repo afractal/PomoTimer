@@ -1,9 +1,7 @@
 import { Timer } from "sharp-timer";
-import { TimerKind, BreakTimer, WorkTimer } from "../types/timer-kind";
 import { StatusBarAlignment, window } from "vscode";
-import { CurrentTask } from "../types/current-task";
-import { Taskboard } from "../types/taskboard";
-import * as Config from "../services/configuration-service";
+import { WorkTimer, BreakTimer, CurrentTask, Taskboard } from "../types";
+import * as Config from "../services/configuration";
 
 export const createWorkTimer = (): WorkTimer => ({
     kind: 'work',

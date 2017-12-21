@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { TimerComponent } from "../../src/components/timer-component";
+import { TimerComponent } from "../../src/components/timer";
 import { createWorkTimer } from "../../src/components/creators";
 
 

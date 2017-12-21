@@ -1,9 +1,11 @@
-import { ITimerComponent } from "../timer-component";
+import { ITimerComponent } from "../timer";
 
-
-// visible timer
 export class VisibleTimerDecorator implements ITimerComponent {
     constructor(private timerComponent: ITimerComponent) { }
+
+    getState() {
+        return this.timerComponent.getState();
+    }
 
     displayTimer() {
         return this;

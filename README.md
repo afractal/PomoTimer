@@ -28,12 +28,12 @@
 
 ## Keybindings
 
-command                             | mac                | win
------------------------------------ | ------------------ | ---------------
-Display Taskboard                   | cmd+alt+t          | ctrl+alt+t
-Display/Hide Pomodoro Timer         | cmd+alt+d          | ctrl+alt+d
-Start/Pause/Resume Pomodoro Timer   | cmd+alt+s          | ctrl+alt+s
-Restart Pomodoro Timer              | cmd+alt+shift+r    | ctrl+alt+shift+r
+command                             | mac                 | win
+----------------------------------- | ------------------- | ---------------
+Display Taskboard                   | cmd+alt+t           | ctrl+alt+t
+Display/Hide Pomodoro Timer         | cmd+alt+d           | ctrl+alt+d
+Start/Pause/Resume Pomodoro Timer   | cmd+alt+s           | ctrl+alt+s
+Restart Pomodoro Timer              | cmd+alt+shift+r     | ctrl+alt+shift+r
 
 
 ## Configuration

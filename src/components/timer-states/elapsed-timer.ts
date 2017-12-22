@@ -10,7 +10,7 @@ export class ElapsedTimer implements ITimerState {
 
     getState(): TimerStates {
         return 'elapsed'
-    };
+    }
 
     restart() {
         this.timerObj.timer.stop();

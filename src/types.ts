@@ -112,4 +112,8 @@ export interface ITimerDecorator extends ITimerComponent {
 export type TimerVisibilityStates = 'hidden' | 'visible' | undefined
 
 
-
+export type ImmutableSetType<T> = {
+    add: (item: T) => ImmutableSetType<T>
+    remove: (item: T) => ImmutableSetType<T>
+    items: () => T[]
+}

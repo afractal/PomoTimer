@@ -2,19 +2,16 @@ import { createWorkTimer, createCurrentTask, createTaskboard } from "../componen
 import { TimerComponent } from "../components/timer";
 import { CurrentTaskComponent } from "../components/current-task";
 import { TaskboardComponent } from "../components/taskboard";
-import { commands, window, ExtensionContext } from 'vscode';
+import { commands, window, ExtensionContext, } from 'vscode';
 import { MessagingCenter } from "../services/messaging-center";
-import { Messages, ITimerDecorator, ITimerComponent } from "../types";
-import { RunningTimer } from "../components/timer-states/running-timer";
-import { PausedTimer } from "../components/timer-states/paused-timer";
-import { UnStartedTimer } from "../components/timer-states/unstarted-timer";
+import { Messages, ITimerDecorator } from "../types";
 import { HiddenTimerDecorator } from "../components/timer-decorators/hidden-timer";
-import { VisibleTimerDecorator } from "../components/timer-decorators/visible-timer";
+
+const registerCommand = commands.registerCommand;
 
 let workTimerComponent: ITimerDecorator =
     new HiddenTimerDecorator(
-        new TimerComponent(createWorkTimer())
-    )
+        new TimerComponent(createWorkTimer()))
 
 let currentTaskComponent =
     new CurrentTaskComponent(createCurrentTask());
@@ -31,13 +28,13 @@ MessagingCenter.subscribe(Messages.TimerElapsed, () => {
 
 MessagingCenter.subscribe(Messages.AttachTask, selectedTask => {
     currentTaskComponent.setCurrentWorkingTask(selectedTask);
-    displayTimerCommandLogic();
+    displayCommandLogic();
 });
 
 MessagingCenter.subscribe(Messages.DetachTask, selectedTask => {
     const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTask);
     if (wasRemoved) {
-        workTimerComponent = workTimerComponent.restartTimer();
+        restartCommandLogic();
     }
 });
 
@@ -45,25 +42,25 @@ MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodo
     await currentTaskComponent.updatePomodoroCounter(completedPomodori);
 });
 
-// ===================================================================================
+// ==========================================   ==========================================
 
-// start & resume should be one command - done
-// display & hide should be one command
+const showTaskboardCommandLogic = () => {
+    taskboardComponent.showTaskboard();
+};
 
-
-const displayTimerCommandLogic = () => {
+const displayCommandLogic = () => {
     workTimerComponent = workTimerComponent.displayTimer();
     currentTaskComponent.displayCurrentTask();
 };
 
-const hideTimerCommandLogic = () => {
+const hideCommandLogic = () => {
     workTimerComponent = workTimerComponent.hideTimer();
     currentTaskComponent.hideCurrentTask();
 };
 
 const startCommandLogic = async () => {
     if (!currentTaskComponent.hasTaskAssigned()) {
-        await taskboardComponent.showTaskboard();
+        await showTaskboardCommandLogic();
     }
     else {
         workTimerComponent = workTimerComponent.startTimer();
@@ -78,14 +75,18 @@ const resumeCommandLogic = () => {
     workTimerComponent = workTimerComponent.resumeTimer();
 };
 
-const displayOrHideCommand = commands.registerCommand('pomotimer.displayOrHideTimer', () => {
+const restartCommandLogic = () => {
+    workTimerComponent = workTimerComponent.restartTimer();
+};
+
+const displayOrHideCommand = registerCommand('pomotimer.displayOrHideTimer', () => {
     switch (workTimerComponent.getVisibilityState()) {
         case 'hidden':
-            displayTimerCommandLogic();
+            displayCommandLogic();
             break;
 
         case 'visible':
-            hideTimerCommandLogic();
+            hideCommandLogic();
             break;
 
         default:
@@ -93,8 +94,8 @@ const displayOrHideCommand = commands.registerCommand('pomotimer.displayOrHideTi
     }
 });
 
-const startOrResumeCommand = commands.registerCommand('pomotimer.startOrPauseTimer', async () => {
-    displayTimerCommandLogic();
+const startOrResumeCommand = registerCommand('pomotimer.startOrPauseTimer', async () => {
+    displayCommandLogic();
 
     switch (workTimerComponent.getState()) {
         case 'paused':
@@ -114,33 +115,19 @@ const startOrResumeCommand = commands.registerCommand('pomotimer.startOrPauseTim
     }
 });
 
-const displayTimerCommand = commands.registerCommand('pomotimer.displayTimer', () => {
-    displayTimerCommandLogic();
-});
+const displayTimerCommand = registerCommand('pomotimer.displayTimer', displayCommandLogic);
 
-const startTimerCommand = commands.registerCommand('pomotimer.startTimer', async () => {
-    await startCommandLogic();
-});
+const startTimerCommand = registerCommand('pomotimer.startTimer', startCommandLogic);
 
-const pauseTimerCommand = commands.registerCommand('pomotimer.pauseTimer', () => {
-    pauseCommandLogic();
-});
+const pauseTimerCommand = registerCommand('pomotimer.pauseTimer', pauseCommandLogic);
 
-const resumeTimerCommand = commands.registerCommand('pomotimer.resumeTimer', () => {
-    resumeCommandLogic();
-});
+const resumeTimerCommand = registerCommand('pomotimer.resumeTimer', resumeCommandLogic);
 
-const restartTimerCommand = commands.registerCommand('pomotimer.restartTimer', () => {
-    workTimerComponent = workTimerComponent.restartTimer();
-});
+const restartTimerCommand = registerCommand('pomotimer.restartTimer', restartCommandLogic);
 
-const hideTimerCommand = commands.registerCommand('pomotimer.hideTimer', () => {
-    hideTimerCommandLogic();
-});
+const hideTimerCommand = registerCommand('pomotimer.hideTimer', hideCommandLogic);
 
-const displayTaskboardCommand = commands.registerCommand('pomotimer.displayTaskboard', async () => {
-    await taskboardComponent.showTaskboard();
-});
+const displayTaskboardCommand = registerCommand('pomotimer.displayTaskboard', showTaskboardCommandLogic);
 
 export const registerAllCommands = (context: ExtensionContext) => {
     context.subscriptions.push(

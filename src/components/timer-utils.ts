@@ -1,10 +1,9 @@
 import { MessagingCenter } from "../services/messaging-center";
 import { WorkTimer, Messages } from "../types";
-import { Timer } from "sharp-timer";
-import * as Config from '../services/configuration';
+import { createTimerForWork } from '../components/creators';
 
 export const registerTimerEvents = (timerObj: WorkTimer) => {
-    timerObj.timer = new Timer(Config.getPomodoroSizeInMinutes() * 60);
+    timerObj.timer = createTimerForWork();
 
     timerObj.timer.onIntervalElapsing((_: number) => {
         timerObj.statusBarClock.text = timerObj.timer.toString();

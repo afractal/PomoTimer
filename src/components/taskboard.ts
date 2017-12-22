@@ -1,23 +1,33 @@
 import { window } from 'vscode';
-import { insertNewAsync, removeAsync, getTasks, createStore } from '../services/task-store';
 import { EventEmitter } from 'events';
 import { MessagingCenter } from '../services/messaging-center';
 import { Task, Taskboard, Messages, TaskPick, PickType } from '../types';
+import * as TaskStore from '../services/task-store';
 
 type ListenerDelegate = (taskPick: Task) => void;
 
 export class TaskboardComponent {
-    constructor(taskboard: Taskboard) {
-        this.taskboard = taskboard;
-    }
-
-    private taskboard: Taskboard;
-
+    constructor(private taskboard: Taskboard) { }
 
     showTaskboard = async () => {
-        const choosePick: PickType = { kind: 'choose', label: 'Choose task from board', description: '' };
-        const addPick: PickType = { kind: 'add', label: 'Add new task to board', description: '' };
-        const removePick: PickType = { kind: 'remove', label: 'Remove task from board', description: '' };
+        const choosePick: PickType = {
+            kind: 'choose',
+            label: 'Choose task from board',
+            description: ''
+        };
+
+        const addPick: PickType = {
+            kind: 'add',
+            label: 'Add new task to board',
+            description: ''
+        };
+
+        const removePick: PickType = {
+            kind: 'remove',
+            label: 'Remove task from board',
+            description: ''
+        };
+
         // const markPick: Pick = { kind: 'mark', label: 'Mark task as done', description: '' };
 
         const selectedPick = await window.showQuickPick([choosePick, addPick, removePick], {
@@ -56,7 +66,7 @@ export class TaskboardComponent {
             completedPomodori: 0
         };
 
-        await insertNewAsync(task);
+        await TaskStore.insertNewAsync(task);
         await this.showTaskboard();
     };
 
@@ -69,7 +79,7 @@ export class TaskboardComponent {
 
         MessagingCenter.publish(Messages.DetachTask, taskPick.task);
 
-        await removeAsync(taskPick.task);
+        await TaskStore.removeAsync(taskPick.task);
         await this.showTaskboard();
     };
 
@@ -94,9 +104,10 @@ export class TaskboardComponent {
         }
     };
 
-    private getTaskPicks = () => {
-        return getTasks().map(this.mapTaskPicker);
-    };
+    private getTaskPicks = () =>
+        TaskStore
+            .getTasks()
+            .map(this.mapTaskPicker);
 
     private mapTaskPicker = (task: Task): TaskPick => ({
         label: task.name,

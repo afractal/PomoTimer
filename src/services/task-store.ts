@@ -1,5 +1,6 @@
 import { Memento, ExtensionContext } from 'vscode';
 import { Task } from '../types';
+import { ImmutableSet } from './immutable-set';
 
 const mementoKey = 'tasks';
 type TaskStore = {
@@ -33,9 +34,10 @@ export const updateAsync = async (task: Task) => {
 
 const updatePomodori = (newTask: Task) => {
     return (task: Task) => {
-        const completedPomodori = (task.name == task.name) ?
-            newTask.completedPomodori :
-            task.completedPomodori;
+        const completedPomodori =
+            (task.name == task.name) ?
+                newTask.completedPomodori :
+                task.completedPomodori;
 
         return {
             ...task,
@@ -51,36 +53,4 @@ export const removeAsync = async (task: Task) => {
 
 export const removeAllAsync = async () => {
     await taskStore.memento.update(mementoKey, []);
-};
-
-
-type ImmutableSet<T> = {
-    add: (item: T) => ImmutableSet<T>
-    remove: (item: T) => ImmutableSet<T>
-    items: () => T[]
-}
-
-const ImmutableSet = (collection: Task[]): ImmutableSet<Task> => {
-    let items = new Array<Task>(...collection);
-
-    const contains = (item: Task) =>
-        items.some(x => x.name == item.name);
-
-    return {
-        add(item: Task): ImmutableSet<Task> {
-            if (!contains(item))
-                items.push(item);
-
-            return this;
-        },
-        remove(item: Task): ImmutableSet<Task> {
-            if (contains(item))
-                items = items.filter(x => x.name != item.name);
-
-            return this;
-        },
-        items(): Task[] {
-            return items;
-        }
-    };
 };

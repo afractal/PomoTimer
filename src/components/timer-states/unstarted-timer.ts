@@ -13,7 +13,9 @@ export class UnStartedTimer implements ITimerState {
         this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
     }
 
-    getState(): TimerStates { return 'unstarted'; }
+    getState(): TimerStates {
+        return 'unstarted';
+    }
 
     display() {
         this.timerObj.statusBarAction.show()

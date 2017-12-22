@@ -4,7 +4,9 @@ import { ITimerState, WorkTimer, TimerStates } from "../../types";
 export class PausedTimer implements ITimerState {
     constructor(private timerObj: WorkTimer) { }
 
-    getState(): TimerStates { return 'paused'; }
+    getState(): TimerStates {
+        return 'paused';
+    }
 
     resume() {
         this.timerObj.timer.resume();

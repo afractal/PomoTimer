@@ -67,7 +67,7 @@ export class TaskboardComponent {
 
         if (!taskPick) return;
 
-        MessagingCenter.publish(Messages.DetachTask, taskPick);
+        MessagingCenter.publish(Messages.DetachTask, taskPick.task);
 
         await removeAsync(taskPick.task);
         await this.showTaskboard();

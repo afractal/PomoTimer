@@ -8,7 +8,9 @@ import * as Config from "../../services/configuration";
 export class RunningTimer implements ITimerState {
     constructor(private timerObj: WorkTimer) { }
 
-    getState(): TimerStates { return 'running'; }
+    getState(): TimerStates {
+        return 'running';
+    }
 
     pause() {
         this.timerObj.timer.pause();

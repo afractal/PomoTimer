@@ -31,9 +31,8 @@
     ],
     "activationEvents": [
         "onCommand:pomotimer.displayTaskboard",
-        "onCommand:pomotimer.displayTimer",
-        "onCommand:pomotimer.hideTimer",
         "onCommand:pomotimer.restartTimer",
+        "onCommand:pomotimer.displayOrHideTimer",
         "onCommand:pomotimer.startOrPauseTimer"
     ],
     "main": "./out/src/extension",
@@ -58,16 +57,12 @@
                 "command": "pomotimer.displayTaskboard"
             },
             {
-                "title": "Display Pomodoro Timer",
-                "command": "pomotimer.displayTimer"
-            },
-            {
-                "title": "Hide Pomodoro Timer",
-                "command": "pomotimer.hideTimer"
-            },
-            {
                 "title": "Restart Pomodoro Timer",
                 "command": "pomotimer.restartTimer"
+            },
+            {
+                "title": "Display/Hide Timer",
+                "command": "pomotimer.displayOrHideTimer"
             },
             {
                 "title": "Start/Stop/Resume Pomodoro Timer",
@@ -82,22 +77,16 @@
                 "mac": "cmd+alt+t"
             },
             {
-                "command": "pomotimer.displayTimer",
-                "key": "ctrl+alt+d",
-                "win": "ctrl+alt+d",
-                "mac": "cmd+alt+d"
-            },
-            {
-                "command": "pomotimer.hideTimer",
-                "key": "ctrl+alt+h",
-                "win": "ctrl+alt+h",
-                "mac": "cmd+alt+h"
-            },
-            {
                 "command": "pomotimer.restartTimer",
                 "key": "ctrl+alt+shift+r",
                 "win": "ctrl+alt+shift+r",
                 "mac": "cmd+alt+shift+r"
+            },
+            {
+                "command": "pomotimer.displayOrHideTimer",
+                "key": "ctrl+alt+d",
+                "win": "ctrl+alt+d",
+                "mac": "cmd+alt+d"
             },
             {
                 "command": "pomotimer.startOrPauseTimer",

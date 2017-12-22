@@ -1,16 +1,20 @@
 import { createWorkTimer, createCurrentTask, createTaskboard } from "../components/creators";
-import { TimerComponent, ITimerComponent } from "../components/timer";
+import { TimerComponent } from "../components/timer";
 import { CurrentTaskComponent } from "../components/current-task";
 import { TaskboardComponent } from "../components/taskboard";
 import { commands, window, ExtensionContext } from 'vscode';
 import { MessagingCenter } from "../services/messaging-center";
-import { Messages } from "../types";
+import { Messages, ITimerDecorator, ITimerComponent } from "../types";
 import { RunningTimer } from "../components/timer-states/running-timer";
 import { PausedTimer } from "../components/timer-states/paused-timer";
 import { UnStartedTimer } from "../components/timer-states/unstarted-timer";
+import { HiddenTimerDecorator } from "../components/timer-decorators/hidden-timer";
+import { VisibleTimerDecorator } from "../components/timer-decorators/visible-timer";
 
-let workTimerComponent: ITimerComponent =
-    new TimerComponent(createWorkTimer())
+let workTimerComponent: ITimerDecorator =
+    new HiddenTimerDecorator(
+        new TimerComponent(createWorkTimer())
+    )
 
 let currentTaskComponent =
     new CurrentTaskComponent(createCurrentTask());
@@ -33,7 +37,7 @@ MessagingCenter.subscribe(Messages.AttachTask, selectedTask => {
 MessagingCenter.subscribe(Messages.DetachTask, selectedTask => {
     const wasRemoved = currentTaskComponent.removeCurrentWorkingTask(selectedTask);
     if (wasRemoved) {
-        workTimerComponent.restartTimer();
+        workTimerComponent = workTimerComponent.restartTimer();
     }
 });
 
@@ -48,24 +52,46 @@ MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodo
 
 
 const displayTimerCommandLogic = () => {
-    workTimerComponent.displayTimer();
+    workTimerComponent = workTimerComponent.displayTimer();
     currentTaskComponent.displayCurrentTask();
 };
 
+const hideTimerCommandLogic = () => {
+    workTimerComponent = workTimerComponent.hideTimer();
+    currentTaskComponent.hideCurrentTask();
+};
+
 const startCommandLogic = async () => {
-    if (!currentTaskComponent.hasTaskAssigned())
+    if (!currentTaskComponent.hasTaskAssigned()) {
         await taskboardComponent.showTaskboard();
-    else
-        workTimerComponent.startTimer();
+    }
+    else {
+        workTimerComponent = workTimerComponent.startTimer();
+    }
 };
 
 const pauseCommandLogic = () => {
-    workTimerComponent.pauseTimer();
+    workTimerComponent = workTimerComponent.pauseTimer();
 };
 
 const resumeCommandLogic = () => {
-    workTimerComponent.resumeTimer();
+    workTimerComponent = workTimerComponent.resumeTimer();
 };
+
+const displayOrHideCommand = commands.registerCommand('pomotimer.displayOrHideTimer', () => {
+    switch (workTimerComponent.getVisibilityState()) {
+        case 'hidden':
+            displayTimerCommandLogic();
+            break;
+
+        case 'visible':
+            hideTimerCommandLogic();
+            break;
+
+        default:
+            throw 'Invalid visibility state';
+    }
+});
 
 const startOrResumeCommand = commands.registerCommand('pomotimer.startOrPauseTimer', async () => {
     displayTimerCommandLogic();
@@ -84,7 +110,7 @@ const startOrResumeCommand = commands.registerCommand('pomotimer.startOrPauseTim
             break;
 
         default:
-            break;
+            throw 'Invalid state';
     }
 });
 
@@ -105,12 +131,11 @@ const resumeTimerCommand = commands.registerCommand('pomotimer.resumeTimer', () 
 });
 
 const restartTimerCommand = commands.registerCommand('pomotimer.restartTimer', () => {
-    workTimerComponent.restartTimer();
+    workTimerComponent = workTimerComponent.restartTimer();
 });
 
 const hideTimerCommand = commands.registerCommand('pomotimer.hideTimer', () => {
-    workTimerComponent.hideTimer()
-    currentTaskComponent.hideCurrentTask();
+    hideTimerCommandLogic();
 });
 
 const displayTaskboardCommand = commands.registerCommand('pomotimer.displayTaskboard', async () => {
@@ -126,6 +151,7 @@ export const registerAllCommands = (context: ExtensionContext) => {
         restartTimerCommand,
         hideTimerCommand,
         displayTaskboardCommand,
+        displayOrHideCommand,
         startOrResumeCommand
     );
 };

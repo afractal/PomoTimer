@@ -1,19 +1,7 @@
 import { VisibleTimerDecorator } from './timer-decorators/visible-timer';
 import { HiddenTimerDecorator } from './timer-decorators/hidden-timer';
-import { WorkTimer, ITimerState, TimerStates } from '../types';
+import { WorkTimer, ITimerState, TimerStates, ITimerComponent } from '../types';
 import { UnStartedTimer } from './timer-states/unstarted-timer';
-
-export interface ITimerComponent {
-    startTimer: () => ITimerComponent
-    pauseTimer: () => ITimerComponent
-    resumeTimer: () => ITimerComponent
-    restartTimer: () => ITimerComponent
-
-    displayTimer: () => ITimerComponent
-    hideTimer: () => ITimerComponent
-
-    getState: () => TimerStates
-}
 
 export class TimerComponent implements ITimerComponent {
     constructor(timer: WorkTimer) {
@@ -22,18 +10,22 @@ export class TimerComponent implements ITimerComponent {
 
     private timerState: ITimerState;
 
-    getState(): TimerStates {
+    getState() {
         return this.timerState.getState();
     }
 
-    displayTimer(): ITimerComponent {
-        this.timerState = this.timerState.display();
-        return new VisibleTimerDecorator(this);
+    getVisibilityState() {
+        return undefined;
     }
 
-    hideTimer(): ITimerComponent {
+    displayTimer() {
+        this.timerState = this.timerState.display();
+        return this;
+    }
+
+    hideTimer() {
         this.timerState = this.timerState.hide();
-        return new HiddenTimerDecorator(this);
+        return this;
     }
 
     startTimer() {

@@ -1,15 +1,20 @@
-import { ITimerComponent } from "../timer";
+import { TimerVisibilityStates, ITimerComponent, ITimerDecorator } from "../../types";
+import { VisibleTimerDecorator } from "./visible-timer";
 
-export class HiddenTimerDecorator implements ITimerComponent {
+export class HiddenTimerDecorator implements ITimerDecorator {
     constructor(private timerComponent: ITimerComponent) { }
 
     getState() {
         return this.timerComponent.getState();
     }
 
+    getVisibilityState(): TimerVisibilityStates {
+        return 'hidden';
+    }
+
     displayTimer() {
         this.timerComponent.displayTimer();
-        return this;
+        return new VisibleTimerDecorator(this.timerComponent);
     }
 
     hideTimer() {

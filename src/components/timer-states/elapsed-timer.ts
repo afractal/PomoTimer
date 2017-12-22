@@ -8,7 +8,9 @@ import * as Config from "../../services/configuration";
 export class ElapsedTimer implements ITimerState {
     constructor(private timerObj: WorkTimer) { }
 
-    getState(): TimerStates { return 'elapsed' };
+    getState(): TimerStates {
+        return 'elapsed'
+    };
 
     restart() {
         this.timerObj.timer.stop();

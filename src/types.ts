@@ -80,14 +80,36 @@ export type BreakTimer = BaseTimer & { kind: 'break' }
 export type TimerKind = WorkTimer | BreakTimer
 
 export interface ITimerState {
-    display: () => ITimerState
-    start: () => ITimerState
-    pause: () => ITimerState
-    resume: () => ITimerState
-    restart: () => ITimerState
-    hide: () => ITimerState
+    display(): ITimerState
+    start(): ITimerState
+    pause(): ITimerState
+    resume(): ITimerState
+    restart(): ITimerState
+    hide(): ITimerState
 
-    getState: () => TimerStates
+    getState(): TimerStates
 }
 
 export type TimerStates = 'unstarted' | 'running' | 'paused' | 'elapsed'
+
+export interface ITimerComponent {
+    startTimer(): ITimerDecorator
+    pauseTimer(): ITimerDecorator
+    resumeTimer(): ITimerDecorator
+    restartTimer(): ITimerDecorator
+
+    displayTimer(): ITimerDecorator
+    hideTimer(): ITimerDecorator
+
+    getState(): TimerStates
+}
+
+
+export interface ITimerDecorator extends ITimerComponent {
+    getVisibilityState(): TimerVisibilityStates
+}
+
+export type TimerVisibilityStates = 'hidden' | 'visible' | undefined
+
+
+

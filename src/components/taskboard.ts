@@ -1,4 +1,4 @@
-import { window } from 'vscode';
+import { window, InputBoxOptions } from 'vscode';
 import { EventEmitter } from 'events';
 import { MessagingCenter } from '../services/messaging-center';
 import { Task, Taskboard, Messages, TaskPick, PickType } from '../types';
@@ -9,7 +9,15 @@ type ListenerDelegate = (taskPick: Task) => void;
 export class TaskboardComponent {
     constructor(private taskboard: Taskboard) { }
 
-    showTaskboard = async () => {
+    async showTaskboard() {
+        const selectedPick = await window.showQuickPick(this.createPickers(), {
+            placeHolder: 'Choose the action you want to perform'
+        });
+
+        await this.performAction(selectedPick);
+    }
+
+    private createPickers() {
         const choosePick: PickType = {
             kind: 'choose',
             label: 'Choose task from board',
@@ -22,6 +30,12 @@ export class TaskboardComponent {
             description: ''
         };
 
+        const resetPick: PickType = {
+            kind: 'reset',
+            label: 'Reset task from board',
+            description: ''
+        };
+
         const removePick: PickType = {
             kind: 'remove',
             label: 'Remove task from board',
@@ -30,14 +44,10 @@ export class TaskboardComponent {
 
         // const markPick: Pick = { kind: 'mark', label: 'Mark task as done', description: '' };
 
-        const selectedPick = await window.showQuickPick([choosePick, addPick, removePick], {
-            placeHolder: 'Choose the action you want to perform'
-        });
+        return [choosePick, addPick, resetPick, removePick];
+    }
 
-        await this.performActionAsync(selectedPick);
-    };
-
-    private showChoosePickerAsync = async () => {
+    private async showChoosePicker() {
         const taskPick = await window.showQuickPick(this.getTaskPicks(), {
             placeHolder: 'Choose the task you want to add to the timer'
         });
@@ -45,9 +55,9 @@ export class TaskboardComponent {
         if (!taskPick) return;
 
         MessagingCenter.publish(Messages.AttachTask, taskPick.task);
-    };
+    }
 
-    private showAddPickerAsync = async () => {
+    private async showAddPicker() {
         const taskName = await window.showInputBox({
             placeHolder: 'Enter the name of the task you want to add'
         });
@@ -66,11 +76,23 @@ export class TaskboardComponent {
             completedPomodori: 0
         };
 
-        await TaskStore.insertNewAsync(task);
+        await TaskStore.insertNew(task);
         await this.showTaskboard();
-    };
+    }
 
-    private showRemovePickerAsync = async () => {
+    private async showResetPicker() {
+        const taskPick = await window.showQuickPick(this.getTaskPicks(), {
+            placeHolder: 'Enter the name of the task you want to reset'
+        });
+
+        if (!taskPick) return;
+
+        await TaskStore.reset(taskPick.task);
+        MessagingCenter.publish(Messages.UpdatePomodoriCounter, 0)
+        await this.showTaskboard();
+    }
+
+    private async showRemovePicker() {
         const taskPick = await window.showQuickPick(this.getTaskPicks(), {
             placeHolder: 'Enter the name of the task you want to remove'
         });
@@ -79,32 +101,37 @@ export class TaskboardComponent {
 
         MessagingCenter.publish(Messages.DetachTask, taskPick.task);
 
-        await TaskStore.removeAsync(taskPick.task);
+        await TaskStore.remove(taskPick.task);
         await this.showTaskboard();
-    };
+    }
 
-    private showMarkPickerAsync = async () => { };
+    private async showMarkPicker() { }
 
-    private performActionAsync = async (picker: PickType | undefined) => {
+    private async performAction(picker: PickType | undefined) {
         if (!picker) return;
 
         switch (picker.kind) {
             case 'choose':
-                await this.showChoosePickerAsync();
+                await this.showChoosePicker();
                 break;
             case 'add':
-                await this.showAddPickerAsync();
+                await this.showAddPicker();
                 break;
             case 'remove':
-                await this.showRemovePickerAsync();
+                await this.showRemovePicker();
                 break;
             case 'mark':
-                await this.showMarkPickerAsync();
+                await this.showMarkPicker();
                 break;
+            case 'reset':
+                await this.showResetPicker();
+                break;
+            default:
+                throw 'Picker kind not found!';
         }
-    };
+    }
 
-    private getTaskPicks = () =>
+    private getTaskPicks = (): TaskPick[] =>
         TaskStore
             .getTasks()
             .map(this.mapTaskPicker);

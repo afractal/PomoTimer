@@ -45,7 +45,7 @@ export enum Messages {
 }
 
 export interface PickType extends IQuickPickItem {
-    kind: 'add' | 'mark' | 'remove' | 'choose'
+    kind: 'add' | 'mark' | 'remove' | 'choose' | 'reset'
 }
 
 export interface IQuickPickItem {
@@ -111,9 +111,9 @@ export interface ITimerDecorator extends ITimerComponent {
 
 export type TimerVisibilityStates = 'hidden' | 'visible' | undefined
 
-
 export type ImmutableSetType<T> = {
     add: (item: T) => ImmutableSetType<T>
     remove: (item: T) => ImmutableSetType<T>
+    update: (item: T, updateFn: (item: T) => void) => ImmutableSetType<T>
     items: () => T[]
 }

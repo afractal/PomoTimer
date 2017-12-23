@@ -1,17 +1,13 @@
 import { window, StatusBarItem, StatusBarAlignment, Memento } from 'vscode';
 import { EventEmitter } from 'events';
-import { updateAsync, createStore } from '../services/task-store';
+import { update, createStore } from '../services/task-store';
 import { MessagingCenter } from '../services/messaging-center';
 import { CurrentTask, Messages, Task, CommandMappingsEnum } from '../types';
 
 type ListenerDelegate = (pomodoroCounter: number) => void;
 
 export class CurrentTaskComponent {
-    constructor(currentTask: CurrentTask) {
-        this.currentTask = currentTask;
-    }
-
-    private currentTask: CurrentTask;
+    constructor(private currentTask: CurrentTask) { }
 
     hasTaskAssigned = () => {
         return this.currentTask.selectedTask != null;
@@ -40,7 +36,8 @@ export class CurrentTaskComponent {
         if (!this.currentTask.selectedTask) return;
 
         this.currentTask.selectedTask.completedPomodori = pomodoroCounter;
-        await updateAsync(this.currentTask.selectedTask);
+        this.currentTask.statusBarSelectedTask.text = this.getPomodoroStats(this.currentTask.selectedTask);
+        await update(this.currentTask.selectedTask);
     };
 
     setCurrentWorkingTask = (selectedTask: Task) => {

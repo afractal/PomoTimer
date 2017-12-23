@@ -22,31 +22,28 @@ export const getTasks = () => {
     return taskStore.memento.get<Task[]>(mementoKey, []);
 };
 
-export const insertNewAsync = async (task: Task) => {
+export const insertNew = async (task: Task) => {
     const tasks = ImmutableSet(getTasks()).add(task).items();
     await taskStore.memento.update(mementoKey, tasks);
 };
 
-export const updateAsync = async (task: Task) => {
-    const tasks = getTasks().map(updatePomodori(task));
+export const update = async (task: Task) => {
+    const tasks = ImmutableSet(getTasks()).update(task, (foundTask) => {
+        foundTask.completedPomodori = task.completedPomodori;
+    }).items();
+
     await taskStore.memento.update(mementoKey, tasks);
 };
 
-const updatePomodori = (newTask: Task) => {
-    return (task: Task) => {
-        const completedPomodori =
-            (task.name == task.name) ?
-                newTask.completedPomodori :
-                task.completedPomodori;
+export const reset = async (task: Task) => {
+    const tasks = ImmutableSet(getTasks()).update(task, (foundTask) => {
+        foundTask.completedPomodori = 0;
+    }).items();
 
-        return {
-            ...task,
-            completedPomodori: completedPomodori
-        };
-    };
+    await taskStore.memento.update(mementoKey, tasks);
 };
 
-export const removeAsync = async (task: Task) => {
+export const remove = async (task: Task) => {
     const tasks = ImmutableSet(getTasks()).remove(task).items();
     await taskStore.memento.update(mementoKey, tasks);
 };

@@ -42,10 +42,10 @@ MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodo
     await currentTaskComponent.updatePomodoroCounter(completedPomodori);
 });
 
-// ==========================================   ==========================================
+// ==========================================
 
-const showTaskboardCommandLogic = () => {
-    taskboardComponent.showTaskboard();
+const showTaskboardCommandLogic = async () => {
+    await taskboardComponent.showTaskboard();
 };
 
 const displayCommandLogic = () => {

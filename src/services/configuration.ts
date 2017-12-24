@@ -6,34 +6,36 @@ type Env = 'dev' | 'prod'
 const defaultPomodoroSize = 25;
 const defaultBreakSize = 5;
 const defaultShouldDisplayTimerOnApplicationStart = false;
+
 const devPomodoroSize = 1;
 const devBreakSize = 2;
 const devShouldDisplayTimerOnApplicationStart = false;
 
-const config = workspace.getConfiguration('pomotimer');
+const getConfig = () =>
+    workspace.getConfiguration('pomotimer');
 
-const configWorkTime =
-    config.get<number>('workTime', defaultPomodoroSize);
+const getConfigWorkTime = () =>
+    getConfig().get<number>('workTime', defaultPomodoroSize);
 
-const configBreakTime =
-    config.get<number>('breakTime', defaultBreakSize);
+const getConfigBreakTime = () =>
+    getConfig().get<number>('breakTime', defaultBreakSize);
 
-const configShouldDisplayTimerOnApplicationStart =
-    config.get<boolean>('shouldDisplayTimerOnApplicationStart', defaultShouldDisplayTimerOnApplicationStart);
+const getConfigShouldDisplayTimerOnApplicationStart = () =>
+    getConfig().get<boolean>('shouldDisplayTimerOnApplicationStart', defaultShouldDisplayTimerOnApplicationStart);
 
 const envify = (obj: any) => obj as Env;
 
-const pomoTimerEnv = process.env['POMOTIMER_ENV'];
-const env: Env = !!pomoTimerEnv ? envify(pomoTimerEnv) : envify('dev');
+const pomoTimerEnv = process.env['POMOTIMER_ENV'] || 'prod';
+const env: Env = envify(pomoTimerEnv);
 
 export const getPomodoroSizeInMinutes = () =>
-    (env == 'prod') ? configWorkTime : devPomodoroSize;
+    (env == 'dev') ? devPomodoroSize : getConfigWorkTime();
 
 export const getBreakSizeInMinutes = () =>
-    (env == 'prod') ? configBreakTime : devBreakSize;
+    (env == 'dev') ? devBreakSize : getConfigBreakTime();
 
 export const shouldDisplayTimerOnApplicationStart = () =>
-    (env == 'prod') ? configShouldDisplayTimerOnApplicationStart : devShouldDisplayTimerOnApplicationStart;
+    (env == 'dev') ? devShouldDisplayTimerOnApplicationStart : getConfigShouldDisplayTimerOnApplicationStart();
 
 
 

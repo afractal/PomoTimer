@@ -23,7 +23,7 @@ let taskboardComponent =
 MessagingCenter.subscribe(Messages.TimerElapsed, () => {
     window.showInformationMessage('Time for a break');
     currentTaskComponent.incrementPomodoriCounter();
-    // workTimerComponent.restartTimer();
+    // workTimerComponent = workTimerComponent.restartTimer();
 })
 
 MessagingCenter.subscribe(Messages.AttachTask, selectedTask => {

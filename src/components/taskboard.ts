@@ -41,7 +41,6 @@ export class TaskboardComponent {
             label: 'Remove task from board',
             description: ''
         };
-
         // const markPick: Pick = { kind: 'mark', label: 'Mark task as done', description: '' };
 
         return [choosePick, addPick, resetPick, removePick];
@@ -87,8 +86,9 @@ export class TaskboardComponent {
 
         if (!taskPick) return;
 
+        MessagingCenter.publish(Messages.UpdatePomodoriCounter, 0);
+
         await TaskStore.reset(taskPick.task);
-        MessagingCenter.publish(Messages.UpdatePomodoriCounter, 0)
         await this.showTaskboard();
     }
 

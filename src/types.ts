@@ -70,7 +70,6 @@ type BaseTimer = {
     statusBarClock: StatusBarItem
     statusBarAction: StatusBarItem
     timer: Timer
-    isRunning: boolean
 }
 
 export type WorkTimer = BaseTimer & { kind: 'work' }
@@ -88,26 +87,28 @@ export interface ITimerState {
     hide(): ITimerState
 
     getState(): TimerStates
+    getVisibilityState(): TimerVisibilityStates
 }
 
 export type TimerStates = 'unstarted' | 'running' | 'paused' | 'elapsed'
 
 export interface ITimerComponent {
-    startTimer(): ITimerDecorator
-    pauseTimer(): ITimerDecorator
-    resumeTimer(): ITimerDecorator
-    restartTimer(): ITimerDecorator
+    startTimer(): ITimerComponent
+    pauseTimer(): ITimerComponent
+    resumeTimer(): ITimerComponent
+    restartTimer(): ITimerComponent
 
-    displayTimer(): ITimerDecorator
-    hideTimer(): ITimerDecorator
+    displayTimer(): ITimerComponent
+    hideTimer(): ITimerComponent
 
     getState(): TimerStates
-}
-
-
-export interface ITimerDecorator extends ITimerComponent {
     getVisibilityState(): TimerVisibilityStates
 }
+
+
+// export interface ITimerDecorator extends ITimerComponent {
+//    getVisibilityState(): TimerVisibilityStates
+// }
 
 export type TimerVisibilityStates = 'hidden' | 'visible' | undefined
 

@@ -4,14 +4,15 @@ import { CurrentTaskComponent } from "../components/current-task";
 import { TaskboardComponent } from "../components/taskboard";
 import { commands, window, ExtensionContext, } from 'vscode';
 import { MessagingCenter } from "../services/messaging-center";
-import { Messages, ITimerDecorator } from "../types";
-import { HiddenTimerDecorator } from "../components/timer-decorators/hidden-timer";
+import { Messages, ITimerComponent, ITimerState } from "../types";
+import { HiddenTimer } from "../components/timer-decorators/hidden-timer";
+import { UnStartedTimer } from "../components/timer-states/unstarted-timer";
 
 const registerCommand = commands.registerCommand;
 
-let workTimerComponent: ITimerDecorator =
-    new HiddenTimerDecorator(
-        new TimerComponent(createWorkTimer()))
+let workTimerComponent: ITimerState =
+    new HiddenTimer(
+        new UnStartedTimer(createWorkTimer()))
 
 let currentTaskComponent =
     new CurrentTaskComponent(createCurrentTask());
@@ -49,12 +50,12 @@ const showTaskboardCommandLogic = async () => {
 };
 
 const displayCommandLogic = () => {
-    workTimerComponent = workTimerComponent.displayTimer();
+    workTimerComponent = workTimerComponent.display();
     currentTaskComponent.displayCurrentTask();
 };
 
 const hideCommandLogic = () => {
-    workTimerComponent = workTimerComponent.hideTimer();
+    workTimerComponent = workTimerComponent.hide();
     currentTaskComponent.hideCurrentTask();
 };
 
@@ -63,20 +64,20 @@ const startCommandLogic = async () => {
         await showTaskboardCommandLogic();
     }
     else {
-        workTimerComponent = workTimerComponent.startTimer();
+        workTimerComponent = workTimerComponent.start();
     }
 };
 
 const pauseCommandLogic = () => {
-    workTimerComponent = workTimerComponent.pauseTimer();
+    workTimerComponent = workTimerComponent.pause();
 };
 
 const resumeCommandLogic = () => {
-    workTimerComponent = workTimerComponent.resumeTimer();
+    workTimerComponent = workTimerComponent.resume();
 };
 
 const restartCommandLogic = () => {
-    workTimerComponent = workTimerComponent.restartTimer();
+    workTimerComponent = workTimerComponent.restart();
 };
 
 const displayOrHideCommand = registerCommand('pomotimer.displayOrHideTimer', () => {

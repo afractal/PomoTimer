@@ -12,6 +12,10 @@ export class ElapsedTimer implements ITimerState {
         return 'elapsed'
     }
 
+    getVisibilityState() {
+      return undefined;
+    }
+
     restart() {
         this.timerObj.timer.stop();
         registerTimerEvents(this.timerObj);

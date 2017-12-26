@@ -11,7 +11,6 @@ export const createTimerForBreak = (): Timer =>
 
 export const createWorkTimer = (): WorkTimer => ({
     kind: 'work',
-    isRunning: false,
     timer: createTimerForWork(),
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3)
@@ -19,7 +18,6 @@ export const createWorkTimer = (): WorkTimer => ({
 
 export const createBreakTimer = (): BreakTimer => ({
     kind: 'break',
-    isRunning: false,
     timer: createTimerForBreak(),
     statusBarClock: window.createStatusBarItem(StatusBarAlignment.Right, 2),
     statusBarAction: window.createStatusBarItem(StatusBarAlignment.Right, 3)

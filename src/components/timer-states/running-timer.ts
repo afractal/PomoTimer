@@ -12,6 +12,10 @@ export class RunningTimer implements ITimerState {
         return 'running';
     }
 
+    getVisibilityState() {
+        return undefined;
+    }
+
     pause() {
         this.timerObj.timer.pause();
 

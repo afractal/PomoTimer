@@ -8,6 +8,10 @@ export class PausedTimer implements ITimerState {
         return 'paused';
     }
 
+    getVisibilityState() {
+        return undefined;
+    }
+
     resume() {
         this.timerObj.timer.resume();
 

@@ -1,5 +1,5 @@
-import { VisibleTimerDecorator } from './timer-decorators/visible-timer';
-import { HiddenTimerDecorator } from './timer-decorators/hidden-timer';
+import { VisibleTimer } from './timer-decorators/visible-timer';
+import { HiddenTimer } from './timer-decorators/hidden-timer';
 import { WorkTimer, ITimerState, TimerStates, ITimerComponent } from '../types';
 import { UnStartedTimer } from './timer-states/unstarted-timer';
 

@@ -17,6 +17,10 @@ export class UnStartedTimer implements ITimerState {
         return 'unstarted';
     }
 
+    getVisibilityState() {
+        return undefined;
+    }
+
     display() {
         this.timerObj.statusBarAction.show()
         this.timerObj.statusBarClock.show();

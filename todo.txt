@@ -2,7 +2,7 @@
 - set POMOTIMER_ENV env variable in the pomotimer travis and appveyor CI
 - add StatusBarItemBuilder
 - reset task that have completedPomodori > 0
-
+- bug: restart does not work when timer is unstarted
 
 
 

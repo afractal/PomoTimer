@@ -7,7 +7,7 @@ const defaultPomodoroSize = 25;
 const defaultBreakSize = 5;
 const defaultShouldDisplayTimerOnApplicationStart = false;
 
-const devPomodoroSize = 1;
+const devPomodoroSize = 0.1;
 const devBreakSize = 2;
 const devShouldDisplayTimerOnApplicationStart = false;
 

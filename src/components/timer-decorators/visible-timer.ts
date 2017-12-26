@@ -1,43 +1,43 @@
-import { TimerVisibilityStates, ITimerComponent, ITimerDecorator } from "../../types";
-import { HiddenTimerDecorator } from "./hidden-timer";
+import { TimerVisibilityStates, ITimerComponent, ITimerState } from "../../types";
+import { HiddenTimer } from "./hidden-timer";
 
-export class VisibleTimerDecorator implements ITimerDecorator {
-    constructor(private timerComponent: ITimerComponent) { }
+export class VisibleTimer implements ITimerState {
+    constructor(private timerState: ITimerState) { }
 
     getState() {
-        return this.timerComponent.getState();
+        return this.timerState.getState();
     }
 
     getVisibilityState(): TimerVisibilityStates {
         return 'visible';
     }
 
-    displayTimer() {
+    display() {
         return this;
     }
 
-    hideTimer() {
-        this.timerComponent.hideTimer();
-        return new HiddenTimerDecorator(this.timerComponent);
+    hide() {
+        this.timerState = this.timerState.hide();
+        return new HiddenTimer(this.timerState);
     }
 
-    startTimer() {
-        this.timerComponent.startTimer();
+    start() {
+        this.timerState = this.timerState.start();
         return this;
     }
 
-    pauseTimer() {
-        this.timerComponent.pauseTimer();
+    pause() {
+        this.timerState = this.timerState.pause();
         return this;
     }
 
-    resumeTimer() {
-        this.timerComponent.resumeTimer();
+    resume() {
+        this.timerState = this.timerState.resume();
         return this;
     }
 
-    restartTimer() {
-        this.timerComponent.restartTimer();
+    restart() {
+        this.timerState = this.timerState.restart();
         return this;
     }
 }

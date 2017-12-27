@@ -80,7 +80,10 @@ export class TaskboardComponent {
     }
 
     private async showResetPicker() {
-        const taskPick = await window.showQuickPick(this.getTaskPicks(), {
+        const tasks = this.getTaskPicks()
+            .filter(t => t.task.completedPomodori > 0);
+
+        const taskPick = await window.showQuickPick(tasks, {
             placeHolder: 'Enter the name of the task you want to reset'
         });
 

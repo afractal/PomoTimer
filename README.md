@@ -11,9 +11,11 @@
 *v.0.3.\**
 
 - add adjustable break timer
+- add reset task feature
 - display/hide are condensed to one command
 - start/stop/resume are condensed to one command
-- revisit mechanisms
+- every reset should pull work time from settings
+- revisit timer mechanisms
 
 *v.0.2.\**
 

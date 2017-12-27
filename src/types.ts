@@ -94,7 +94,7 @@ export interface ITimerState {
 
 export type TimerMode = 'work' | 'break' | undefined
 
-export type TimerStates = 'unstarted' | 'running' | 'paused' | 'elapsed'
+export type TimerStates = 'unstarted' | 'running' | 'paused' //  | 'elapsed'
 
 export type TimerVisibilityStates = 'hidden' | 'visible' | undefined
 

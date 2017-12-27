@@ -41,11 +41,12 @@ Restart Pomodoro Timer              | cmd+alt+shift+r     | ctrl+alt+shift+r
 
 ## Configuration
 
-You can configure the duration of a pomodoro for the timer by setting the configuration like the example below, the default is **25** minutes.
+You can configure the duration of a pomodoro and the duration of the break for the timer by setting the configuration like the example below, the default for workTime is **25** minutes and the default for breakTime is **5**.
 
 ```
 {
-    "pomotimer.workTime": 20
+    "pomotimer.workTime": 30,
+    "pomotimer.breakTime": 5
 }
 ```
 

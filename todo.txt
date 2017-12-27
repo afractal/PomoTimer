@@ -1,8 +1,0 @@
-
-- set POMOTIMER_ENV env variable in the pomotimer travis and appveyor CI
-- add StatusBarItemBuilder
-- reset task that have some completed pomodori
-
-
-
-

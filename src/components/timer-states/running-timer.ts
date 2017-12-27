@@ -1,17 +1,14 @@
-import { ITimerState, WorkTimerType, TimerStates, BreakTimerType, TimerMode, TimerVisibilityStates } from "../../types";
-import { PausedTimer } from "./paused-timer";
-import { registerTimerEvents } from "../timer-utils";
-import { UnStartedTimer } from "./unstarted-timer";
+import { ITimerState, WorkTimerType, TimerStates, BreakTimerType, TimerMode, TimerVisibilityStates, TimerType } from "../../types";
 import { Timer } from "sharp-timer";
-import { createTimerForWork } from "../creators";
-import * as Config from "../../services/configuration";
+import { BaseTimer } from "./base-timer";
+
 
 export class RunningTimer implements ITimerState {
-    constructor(private timerObj: WorkTimerType | BreakTimerType) {
-        this.timer = createTimerForWork();
+    constructor(private timerObj: TimerType) {
+        this.baseTimer = new BaseTimer(timerObj);
     }
 
-    private timer: Timer;
+    private baseTimer: BaseTimer;
 
     getState(): TimerStates {
         return 'running';
@@ -26,48 +23,33 @@ export class RunningTimer implements ITimerState {
     }
 
     changeTimerMode(timer: Timer) {
-        this.timer = timer;
+        this.baseTimer.changeTimerMode(timer);
         return this;
     }
 
     pause() {
-        this.timerObj.timer.pause();
-
-        this.timerObj.statusBarAction.command = 'pomotimer.resumeTimer';
-        this.timerObj.statusBarAction.text = '$(triangle-right)';
-        this.timerObj.statusBarAction.tooltip = 'Resume timer';
-
-        this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
-
-        return new PausedTimer(this.timerObj);
+        return this.baseTimer.pause();
     }
 
     display() {
-        this.timerObj.statusBarAction.show()
-        this.timerObj.statusBarClock.show();
+        this.baseTimer.display();
         return this;
     }
 
-    start: () => this;
-    resume: () => this;
+    start() {
+        return this;
+    }
+
+    resume() {
+        return this;
+    }
 
     restart() {
-        this.timerObj.timer.stop();
-        this.timerObj.timer = this.timer;
-        // registerTimerEvents(this.timerObj);
-
-        this.timerObj.statusBarAction.command = 'pomotimer.startTimer';
-        this.timerObj.statusBarAction.text = '$(triangle-right)';
-        this.timerObj.statusBarAction.tooltip = 'Start timer';
-
-        this.timerObj.statusBarClock.text = this.timerObj.timer.toString();
-
-        return new UnStartedTimer(this.timerObj);
+        return this.baseTimer.restart();
     }
 
     hide() {
-        this.timerObj.statusBarAction.hide();
-        this.timerObj.statusBarClock.hide();
+        this.baseTimer.hide();
         return this;
     }
 }

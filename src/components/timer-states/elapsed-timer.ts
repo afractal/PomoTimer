@@ -1,13 +1,13 @@
 import { registerTimerEvents } from "../timer-utils";
 import { UnStartedTimer } from "./unstarted-timer";
 import { RunningTimer } from "./running-timer";
-import { ITimerState, WorkTimerType, TimerStates, BreakTimerType, TimerMode, TimerVisibilityStates } from "../../types";
+import { ITimerState, TimerStates, TimerMode, TimerVisibilityStates, TimerType } from "../../types";
 import { Timer } from "sharp-timer";
 import * as Config from "../../services/configuration";
 import { createTimerForWork } from "../creators";
 
 export class ElapsedTimer implements ITimerState {
-    constructor(private timerObj: WorkTimerType | BreakTimerType) {
+    constructor(private timerObj: TimerType) {
         this.timer = createTimerForWork();
     }
 

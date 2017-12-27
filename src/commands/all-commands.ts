@@ -13,8 +13,8 @@ const registerCommand = commands.registerCommand;
 let timer: ITimerState =
     new WorkTimer(
         new HiddenTimer(
-            new UnStartedTimer(
-                createWorkTimer()))
+            new UnStartedTimer(createWorkTimer())
+        )
     )
 
 let currentTaskComponent =
@@ -24,7 +24,7 @@ let taskboardComponent =
     new TaskboardComponent(createTaskboard());
 
 MessagingCenter.subscribe(Messages.TimerElapsed, () => {
-    console.log('Timer Elapsed')
+    console.log('timer elapsed');
     switch (timer.getTimerMode()) {
         case 'work':
             window.showInformationMessage('Time for a break');
@@ -108,7 +108,7 @@ const displayOrHideCommand = registerCommand('pomotimer.displayOrHideTimer', () 
     }
 });
 
-const startOrResumeCommand = registerCommand('pomotimer.startOrPauseTimer', async () => {
+const startOrPauseOrResumeCommand = registerCommand('pomotimer.startOrPauseOrResume', async () => {
     displayCommandLogic();
 
     switch (timer.getState()) {
@@ -153,6 +153,6 @@ export const registerAllCommands = (context: ExtensionContext) => {
         hideTimerCommand,
         displayTaskboardCommand,
         displayOrHideCommand,
-        startOrResumeCommand
+        startOrPauseOrResumeCommand
     );
 };

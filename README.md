@@ -10,6 +10,7 @@
 
 *v.0.3.\**
 
+- add adjustable break timer
 - display/hide are condensed to one command
 - start/stop/resume are condensed to one command
 - revisit mechanisms

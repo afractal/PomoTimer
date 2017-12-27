@@ -1,9 +1,8 @@
 import { MessagingCenter } from "../services/messaging-center";
-import { WorkTimer, Messages } from "../types";
+import { WorkTimerType, Messages, BreakTimerType } from "../types";
 import { createTimerForWork } from '../components/creators';
 
-export const registerTimerEvents = (timerObj: WorkTimer) => {
-    timerObj.timer = createTimerForWork();
+export const registerTimerEvents = (timerObj: WorkTimerType | BreakTimerType) => {
 
     timerObj.timer.onIntervalElapsing((_: number) => {
         timerObj.statusBarClock.text = timerObj.timer.toString();

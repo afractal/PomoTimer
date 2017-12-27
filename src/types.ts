@@ -72,11 +72,11 @@ type BaseTimer = {
     timer: Timer
 }
 
-export type WorkTimer = BaseTimer & { kind: 'work' }
+export type WorkTimerType = BaseTimer & { kind: 'work' }
 
-export type BreakTimer = BaseTimer & { kind: 'break' }
+export type BreakTimerType = BaseTimer & { kind: 'break' }
 
-export type TimerKind = WorkTimer | BreakTimer
+export type TimerType = WorkTimerType | BreakTimerType
 
 export interface ITimerState {
     display(): ITimerState
@@ -88,27 +88,13 @@ export interface ITimerState {
 
     getState(): TimerStates
     getVisibilityState(): TimerVisibilityStates
+    getTimerMode(): TimerMode
+    changeTimerMode(timerObj: Timer): ITimerState
 }
+
+export type TimerMode = 'work' | 'break' | undefined
 
 export type TimerStates = 'unstarted' | 'running' | 'paused' | 'elapsed'
-
-export interface ITimerComponent {
-    startTimer(): ITimerComponent
-    pauseTimer(): ITimerComponent
-    resumeTimer(): ITimerComponent
-    restartTimer(): ITimerComponent
-
-    displayTimer(): ITimerComponent
-    hideTimer(): ITimerComponent
-
-    getState(): TimerStates
-    getVisibilityState(): TimerVisibilityStates
-}
-
-
-// export interface ITimerDecorator extends ITimerComponent {
-//    getVisibilityState(): TimerVisibilityStates
-// }
 
 export type TimerVisibilityStates = 'hidden' | 'visible' | undefined
 

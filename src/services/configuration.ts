@@ -8,7 +8,7 @@ const defaultBreakSize = 5;
 const defaultShouldDisplayTimerOnApplicationStart = false;
 
 const devPomodoroSize = 0.1;
-const devBreakSize = 2;
+const devBreakSize = 0.2;
 const devShouldDisplayTimerOnApplicationStart = false;
 
 const getConfig = () =>

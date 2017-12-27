@@ -1,18 +1,21 @@
-import { createWorkTimer, createCurrentTask, createTaskboard } from "../components/creators";
-import { TimerComponent } from "../components/timer";
+import { createWorkTimer, createCurrentTask, createTaskboard, createBreakTimer, createTimerForBreak, createTimerForWork } from "../components/creators";
 import { CurrentTaskComponent } from "../components/current-task";
 import { TaskboardComponent } from "../components/taskboard";
 import { commands, window, ExtensionContext, } from 'vscode';
 import { MessagingCenter } from "../services/messaging-center";
-import { Messages, ITimerComponent, ITimerState } from "../types";
+import { Messages, ITimerState } from "../types";
 import { HiddenTimer } from "../components/timer-decorators/hidden-timer";
 import { UnStartedTimer } from "../components/timer-states/unstarted-timer";
+import { WorkTimer } from "../components/timer-decorators/work-timer";
 
 const registerCommand = commands.registerCommand;
 
-let workTimerComponent: ITimerState =
-    new HiddenTimer(
-        new UnStartedTimer(createWorkTimer()))
+let timer: ITimerState =
+    new WorkTimer(
+        new HiddenTimer(
+            new UnStartedTimer(
+                createWorkTimer()))
+    )
 
 let currentTaskComponent =
     new CurrentTaskComponent(createCurrentTask());
@@ -20,11 +23,23 @@ let currentTaskComponent =
 let taskboardComponent =
     new TaskboardComponent(createTaskboard());
 
-
 MessagingCenter.subscribe(Messages.TimerElapsed, () => {
-    window.showInformationMessage('Time for a break');
-    currentTaskComponent.incrementPomodoriCounter();
-    // workTimerComponent = workTimerComponent.restartTimer();
+    console.log('Timer Elapsed')
+    switch (timer.getTimerMode()) {
+        case 'work':
+            window.showInformationMessage('Time for a break');
+            currentTaskComponent.incrementPomodoriCounter();
+            timer = timer.changeTimerMode(createTimerForBreak());
+            break;
+
+        case 'break':
+            window.showInformationMessage('Break is over');
+            timer = timer.changeTimerMode(createTimerForWork());
+            break;
+
+        default:
+            throw 'Invalid timer mode';
+    }
 })
 
 MessagingCenter.subscribe(Messages.AttachTask, selectedTask => {
@@ -43,19 +58,17 @@ MessagingCenter.subscribe(Messages.UpdatePomodoriCounter, async (completedPomodo
     await currentTaskComponent.updatePomodoroCounter(completedPomodori);
 });
 
-// ==========================================
-
 const showTaskboardCommandLogic = async () => {
     await taskboardComponent.showTaskboard();
 };
 
 const displayCommandLogic = () => {
-    workTimerComponent = workTimerComponent.display();
+    timer = timer.display();
     currentTaskComponent.displayCurrentTask();
 };
 
 const hideCommandLogic = () => {
-    workTimerComponent = workTimerComponent.hide();
+    timer = timer.hide();
     currentTaskComponent.hideCurrentTask();
 };
 
@@ -64,24 +77,24 @@ const startCommandLogic = async () => {
         await showTaskboardCommandLogic();
     }
     else {
-        workTimerComponent = workTimerComponent.start();
+        timer = timer.start();
     }
 };
 
 const pauseCommandLogic = () => {
-    workTimerComponent = workTimerComponent.pause();
+    timer = timer.pause();
 };
 
 const resumeCommandLogic = () => {
-    workTimerComponent = workTimerComponent.resume();
+    timer = timer.resume();
 };
 
 const restartCommandLogic = () => {
-    workTimerComponent = workTimerComponent.restart();
+    timer = timer.restart();
 };
 
 const displayOrHideCommand = registerCommand('pomotimer.displayOrHideTimer', () => {
-    switch (workTimerComponent.getVisibilityState()) {
+    switch (timer.getVisibilityState()) {
         case 'hidden':
             displayCommandLogic();
             break;
@@ -98,7 +111,7 @@ const displayOrHideCommand = registerCommand('pomotimer.displayOrHideTimer', () 
 const startOrResumeCommand = registerCommand('pomotimer.startOrPauseTimer', async () => {
     displayCommandLogic();
 
-    switch (workTimerComponent.getState()) {
+    switch (timer.getState()) {
         case 'paused':
             resumeCommandLogic();
             break;

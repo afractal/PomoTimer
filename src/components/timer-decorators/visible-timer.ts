@@ -1,5 +1,6 @@
-import { TimerVisibilityStates, ITimerComponent, ITimerState } from "../../types";
+import { TimerVisibilityStates, ITimerState, WorkTimerType, BreakTimerType, TimerMode } from "../../types";
 import { HiddenTimer } from "./hidden-timer";
+import { Timer } from "sharp-timer";
 
 export class VisibleTimer implements ITimerState {
     constructor(private timerState: ITimerState) { }
@@ -10,6 +11,15 @@ export class VisibleTimer implements ITimerState {
 
     getVisibilityState(): TimerVisibilityStates {
         return 'visible';
+    }
+
+    getTimerMode(): TimerMode {
+        return undefined;
+    }
+
+    changeTimerMode(timerObj: Timer): ITimerState {
+        this.timerState = this.timerState.changeTimerMode(timerObj);
+        return this;
     }
 
     display() {

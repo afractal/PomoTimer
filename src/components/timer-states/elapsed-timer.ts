@@ -1,24 +1,39 @@
 import { registerTimerEvents } from "../timer-utils";
 import { UnStartedTimer } from "./unstarted-timer";
 import { RunningTimer } from "./running-timer";
-import { ITimerState, WorkTimer, TimerStates } from "../../types";
+import { ITimerState, WorkTimerType, TimerStates, BreakTimerType, TimerMode, TimerVisibilityStates } from "../../types";
 import { Timer } from "sharp-timer";
 import * as Config from "../../services/configuration";
+import { createTimerForWork } from "../creators";
 
 export class ElapsedTimer implements ITimerState {
-    constructor(private timerObj: WorkTimer) { }
-
-    getState(): TimerStates {
-        return 'elapsed'
+    constructor(private timerObj: WorkTimerType | BreakTimerType) {
+        this.timer = createTimerForWork();
     }
 
-    getVisibilityState() {
-      return undefined;
+    private timer: Timer;
+
+    getState(): TimerStates {
+        return 'elapsed';
+    }
+
+    getVisibilityState(): TimerVisibilityStates {
+        return undefined;
+    }
+
+    getTimerMode(): TimerMode {
+        return undefined;
+    }
+
+    changeTimerMode(timerObj: Timer) {
+        this.timer = timerObj;
+        return this;
     }
 
     restart() {
         this.timerObj.timer.stop();
-        registerTimerEvents(this.timerObj);
+        this.timerObj.timer = this.timer;
+        // registerTimerEvents(this.timerObj);
 
         this.timerObj.statusBarAction.command = 'pomotimer.startTimer';
         this.timerObj.statusBarAction.text = '$(triangle-right)';

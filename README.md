@@ -3,6 +3,7 @@
 [![Version](https://vsmarketplacebadge.apphb.com/version/afractal.pomotimer.svg)](https://marketplace.visualstudio.com/items?itemName=afractal.pomotimer)
 [![Build Status](https://travis-ci.org/afractal/PomoTimer.svg?branch=master)](https://travis-ci.org/afractal/PomoTimer)
 [![Build status](https://ci.appveyor.com/api/projects/status/fqnva71t73fotv23/branch/master?svg=true)](https://ci.appveyor.com/project/hermesxgjini/pomotimer/branch/master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/622549d0775d18c391fa/maintainability)](https://codeclimate.com/github/afractal/PomoTimer/maintainability)
 
 ![demo](https://raw.githubusercontent.com/afractal/PomoTimer/master/assets/example.gif)
 

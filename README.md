@@ -60,5 +60,5 @@ The source code for this extension is licensed under the [MIT](./LICENSE.md) lic
 ---
 
 <p align="center">
-    made with :heart: by <a href="https://github.com/afractal"></a>
+    made with :heart: by <a href="https://github.com/afractal">me</a>
 </p>

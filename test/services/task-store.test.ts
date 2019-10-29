@@ -4,6 +4,6 @@ import { activate } from '../../src/extension';
 
 
 suite('task store tests', () => {
-    test('getTasks should return an empty array if no tasks exits', () => {
-    });
+  test('getTasks should return an empty array if no tasks exits', () => {
+  });
 })

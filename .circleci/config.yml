@@ -28,7 +28,7 @@ jobs:
       - run: yarn install
 
       # build project
-      - run: yarn vscode:prepublis
+      - run: yarn vscode:prepublish
 
       - save_cache:
           paths:

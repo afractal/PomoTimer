@@ -1,5 +1,6 @@
 # PomoTimer
 
+[![CircleCI](https://circleci.com/gh/afractal/PomoTimer.svg?style=svg)](https://circleci.com/gh/afractal/PomoTimer)
 [![Version](https://vsmarketplacebadge.apphb.com/version/afractal.pomotimer.svg)](https://marketplace.visualstudio.com/items?itemName=afractal.pomotimer)
 
 ![demo](https://raw.githubusercontent.com/afractal/PomoTimer/master/assets/example.gif)
@@ -28,27 +29,29 @@ You can configure the duration of a pomodoro and the duration of the break for t
 
 \*v.0.4.\*\*
 
--   security updates
+- security updates
+- improve footprints of the app
+- remove unnecessary ci's
 
 \*v.0.3.\*\*
 
--   add adjustable break timer
--   add reset task feature
--   display/hide are condensed to one command
--   start/stop/resume are condensed to one command
--   every reset should pull work time from settings
--   revisit timer mechanisms
+- add adjustable break timer
+- add reset task feature
+- display/hide are condensed to one command
+- start/stop/resume are condensed to one command
+- every reset should pull work time from settings
+- revisit timer mechanisms
 
 \*v.0.2.\*\*
 
--   add and integrate taskboard with timer
--   add pomodori counter for tasks
--   bug on hiding/displaying timer
--   bug on removing the current task, it should be removed from the timer
+- add and integrate taskboard with timer
+- add pomodori counter for tasks
+- bug on hiding/displaying timer
+- bug on removing the current task, it should be removed from the timer
 
 \*v0.1.\*\*
 
--   add basic pomodoro timer functionality
+- add basic pomodoro timer functionality
 
 ## Credits
 

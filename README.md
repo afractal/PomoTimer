@@ -27,13 +27,13 @@ You can configure the duration of a pomodoro and the duration of the break for t
 
 ## Changes
 
-\*v.0.4.\*\*
+*v.0.4*
 
 - security updates
 - improve footprints of the app
 - remove unnecessary ci's
 
-\*v.0.3.\*\*
+*v.0.3*
 
 - add adjustable break timer
 - add reset task feature
@@ -42,14 +42,14 @@ You can configure the duration of a pomodoro and the duration of the break for t
 - every reset should pull work time from settings
 - revisit timer mechanisms
 
-\*v.0.2.\*\*
+*v.0.2*
 
 - add and integrate taskboard with timer
 - add pomodori counter for tasks
 - bug on hiding/displaying timer
 - bug on removing the current task, it should be removed from the timer
 
-\*v0.1.\*\*
+*v0.1*
 
 - add basic pomodoro timer functionality
 
